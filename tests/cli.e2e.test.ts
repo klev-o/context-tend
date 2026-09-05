@@ -66,6 +66,10 @@ describe("CLI process", () => {
       /^\d{4}-\d{2}-\d{2}T/,
     );
 
+    const coverage = await runCli(["agents-coverage", "check", root, "--json"]);
+    expect(coverage.code).toBe(0);
+    expect(JSON.parse(coverage.stdout)).toMatchObject({ valid: true });
+
     const repeat = await runCli(["init", root, "--apply", "--json"]);
     expect(repeat.code).toBe(0);
     const validate = await runCli(["validate", root, "--json"]);

@@ -35,8 +35,9 @@ or task trackers.
 - Existing `AGENTS.md` content survives init and update around one small
   managed block.
 - First-run onboarding identifies overloaded or unreliable AGENTS content,
-  proposes evidence-backed destinations, and records completion before
-  resuming the user's original task.
+  proposes evidence-backed destinations, preserves every substantive item,
+  passes deterministic anchor coverage, and records completion before resuming
+  the user's original task.
 - Mechanical facts are handled by deterministic code; semantic claims include
   evidence, confidence, ownership, and a reviewable action.
 - The project remains local-first, portable, inspectable, and small enough to

@@ -9,6 +9,10 @@ import {
   defaultExternalSourceRegistry,
 } from "./assets.js";
 import {
+  AGENTS_COVERAGE_PATH,
+  buildAgentCoverageSnapshotFromText,
+} from "./agents-coverage.js";
+import {
   activeAdapterIds,
   discoverWithAdapters,
 } from "./adapters/index.js";
@@ -283,6 +287,10 @@ export async function buildInitPlan(
   addDiscoveredSources(registry, discovery.registry);
 
   const existingConfig = await loadExistingConfig(root);
+  const existingStateDocument = await readFileIfPresent(
+    root,
+    ".contexttend/state.json",
+  );
   const config: Config = {
     ...(existingConfig ?? DEFAULT_CONFIG),
     mode: options.mode ?? existingConfig?.mode ?? "adaptive",
@@ -347,6 +355,31 @@ export async function buildInitPlan(
           owner: "shared",
         },
   );
+
+  const existingCoverage = await readFileIfPresent(root, AGENTS_COVERAGE_PATH);
+  if (existingCoverage === null && existingStateDocument === null) {
+    changes.push(
+      await planFile(
+        root,
+        AGENTS_COVERAGE_PATH,
+        serializeJson(
+          buildAgentCoverageSnapshotFromText("AGENTS.md", agentsOriginal),
+        ),
+        "capture pre-onboarding AGENTS coverage baseline",
+        "system",
+      ),
+    );
+  } else if (existingCoverage === null) {
+    findings.push({
+      code: "CT203",
+      level: "warning",
+      severity: "P1",
+      message: "Existing installation has no pre-onboarding AGENTS coverage baseline",
+      path: AGENTS_COVERAGE_PATH,
+      remediation:
+        "Before re-onboarding, run contexttend agents-coverage snapshot with a known pre-migration file or Git ref.",
+    });
+  }
 
   if (!hasCanonicalRole(registry, "instructions")) {
     addNativeSource(registry, "agent-instructions", {
@@ -450,13 +483,13 @@ export async function buildInitPlan(
     ),
   );
 
-  const existingState = await readFileIfPresent(root, ".contexttend/state.json");
   changes.push({
     path: ".contexttend/state.json",
-    kind: existingState === null ? "create" : "update",
+    kind: existingStateDocument === null ? "create" : "update",
     reason: "record managed hashes and deterministic baseline",
     owner: "system",
-    beforeHash: existingState === null ? null : sha256(existingState),
+    beforeHash:
+      existingStateDocument === null ? null : sha256(existingStateDocument),
   });
 
   return { root, changes, adapters: discovery.statuses, registry, findings };

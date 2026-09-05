@@ -6,5 +6,4 @@ coverage/
 .DS_Store
 Thumbs.db
 .contexttend/audits/*.md
-.contexttend/candidates/*
-!.contexttend/candidates/.gitkeep
+.contexttend/original-agents-source.md

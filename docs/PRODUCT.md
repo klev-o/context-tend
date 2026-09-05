@@ -37,11 +37,22 @@ audits and bootstrap, and presents a reviewable routing plan. Approved changes
 leave AGENTS as a concise operational map, populate the registered canonical
 sources, record completion, and return to the user's original request.
 
+Onboarding is lossless before it is concise. Init captures a deterministic,
+non-secret-bearing index of headings, configuration identifiers, symbols,
+flags, and paths from pre-onboarding AGENTS content. The semantic workflow must
+account for every substantive source span, materialize detailed subsystem
+knowledge and self-contained candidates before shortening AGENTS, and pass the
+lexical coverage gate before completion can be recorded. Git history may
+support provenance but is not an active knowledge destination.
+
 ## Constraints
 
 - Existing project and external-framework files must be preserved.
 - Pre-existing user-authored knowledge must not be shortened or removed without
   explicit migration authority and a reviewable plan.
+- Unsupported or disputed source knowledge must remain directly reviewable in
+  a self-contained candidate; a commit pointer or summary of omitted detail is
+  insufficient.
 - An LLM must not perform filesystem skeleton creation, hashing, comparison,
   schema validation, migration, adapter detection, state, or conflict
   resolution.

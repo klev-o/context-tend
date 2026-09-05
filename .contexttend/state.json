@@ -2,23 +2,23 @@
   "schemaVersion": 1,
   "contextTendVersion": "0.1.0",
   "installedAt": "2026-09-04T20:24:18.007Z",
-  "updatedAt": "2026-09-05T01:42:32.856Z",
+  "updatedAt": "2026-09-05T02:12:17.664Z",
   "lastOnboarding": "2026-09-04T23:32:47.367Z",
-  "lastSync": "2026-09-05T01:42:32.856Z",
+  "lastSync": "2026-09-05T02:12:17.664Z",
   "lastMemoryAudit": "2026-09-04T20:28:39.171Z",
-  "lastHarnessAudit": "2026-09-04T20:28:39.618Z",
+  "lastHarnessAudit": "2026-09-05T01:58:59.156Z",
   "detectedAdapters": [
     "native"
   ],
   "registeredHashes": {
-    "repository-readme": "cedae5fca4a0dbab17dd8f4c918b9c902eb486da864be7c874fc40a2fd4ce59b",
-    "architecture": "98c02f3929c953c1788fd0ae3c130144a48fd97fccf465fa31ee869be621f0b7",
-    "decisions": "0d8fc0c5ba92aa8f97c3fe49a8129a4aaa200523b5d1c1d94e11fe2c6fadc4d0",
-    "implementation": "98f727c6c9c8be41864379d4b8a7672f31c490fa4587f65456e05a49c6ef0602",
-    "verification": "0f6548a6290808261ab989f2430c50ced7fbad4fc0f9d03aeca0e3b2d4213984",
-    "goals": "efda295117a21f4d77aadfa70845d8957bfd7f1cb0778a2e05d73c685e398c17",
-    "product": "d9c7695aa85a3aa52bcfdffeea193f84d62f7921151ab0b9bab2d72243f77b6a",
-    "roadmap": "c8b8f2352891b3eaf103aac8503f88e62186452f0a4a8919b6d0657da1004846",
+    "repository-readme": "6f649f242a4b044796df98513412aa4b5545bcae59ec8f411a92416bf30a8a52",
+    "architecture": "ff79af254b4caf49bfba879acb92715b9209b89c86e0abb15c549b3954c1ed68",
+    "decisions": "e020b087302ec58b53a18e95b102758760775dbe8a854213d6690e84092e7c57",
+    "implementation": "6aeff77b02a204cae385cce5f2936b720b534d343f7d8d7d1ad88d450ffbe773",
+    "verification": "0982fad5267844bc64da15e569873d3e9bb1b6965013e2c59b6cf19b7145f3a3",
+    "goals": "6b9dae0b65e44c0ccf0eddd958a373b595f184fab8753fd4444d1ecbc0d3b3ff",
+    "product": "3fff1ce45291498904d802810c4f7e7fb4e212b280a9235281ee1ca2f61928fe",
+    "roadmap": "3f3af0990d2261459f10ee3bd29f075bd58253b917b6713b8f0773b8ea7fa6b1",
     "implementation-context": "5fd79bb9fd5925c6f5761eedfd538f9611a190d149680609c4f670ba10e9c255",
     "agent-instructions": "611e9c325bb939426dee3891448ea87629d9b6df1c6a84b8eda63d6eb6860a8d",
     "contexttend-installation": "b4cf2916def6617fba48579d0b23e82ddb99e33fb45d5d3297d6601c6a3985bf",
@@ -27,7 +27,7 @@
   },
   "managedAssets": {
     ".contexttend/guides/agent-governance.md": {
-      "hash": "0c4eb5a9f80af3105ad29a54bfc71d0a22ead1932f390a39459d894d984530c7",
+      "hash": "3f67d01a1c16c9c605c92bac317dfc334b638275599e82bcd77c2ab4057b3965",
       "version": "0.1.0"
     },
     ".contexttend/audits/.gitkeep": {
@@ -55,7 +55,11 @@
       "version": "0.1.0"
     },
     ".agents/skills/context-onboard/SKILL.md": {
-      "hash": "cbe84fdd6c60be726b5756e2c64e37943ed041ee74c552f2c301c536673b24d8",
+      "hash": "c5700ee1243fce86ae24ababe347602f27709ee7e1586e9898d679db72b793f1",
+      "version": "0.1.0"
+    },
+    ".agents/skills/context-onboard/references/agents-migration.md": {
+      "hash": "f01d24efab83706d74d76de87e2ee1247da5c4a7f375db471acfee71c0f1d823",
       "version": "0.1.0"
     }
   },

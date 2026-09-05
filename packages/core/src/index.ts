@@ -1,4 +1,5 @@
 export * from "./adapters/index.js";
+export * from "./agents-coverage.js";
 export * from "./assets.js";
 export * from "./diff.js";
 export * from "./domain.js";

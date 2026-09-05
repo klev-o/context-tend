@@ -20,7 +20,8 @@ filesystem facts                   semantic judgment
 The TypeScript core owns facts that can be reproduced without a model:
 bounded filesystem scanning, Git status, manifest/convention detection, path
 containment, schema validation, SHA-256 hashing, Markdown links, adapter
-detection, state, migrations, managed blocks, and conflict-safe writes.
+detection, state, migrations, managed blocks, AGENTS lexical coverage, and
+conflict-safe writes.
 
 The five Codex Skills own semantic work: first-run onboarding, selecting
 relevant sources, deciding whether knowledge is stale or contradictory,
@@ -115,8 +116,21 @@ target changed after preview. Writes are additive or bounded:
 evidence-backed `ONBOARDING PLAN`. It must write and validate destinations
 before removing source text, and it requires confirmation before changing
 pre-existing user-authored content unless the active request already grants
-that authority. This semantic workflow does not weaken deterministic init
-safety.
+that authority. Detailed migrations use an atomic source-coverage ledger and
+two stages: destinations/candidates first, AGENTS compaction second. A
+self-contained candidate preserves an unresolved claim; a Git-only pointer
+does not. This semantic workflow does not weaken deterministic init safety.
+
+On first init, the core captures `.contexttend/agents-coverage.json` from the
+user-authored portion of AGENTS before adding its managed block. It stores a
+source hash, section locations, and lexical anchors such as configuration
+identifiers, paths, flags, and symbols—not the full source. Assignment-like
+values are excluded, but the baseline remains local repository metadata and
+must still be reviewed under the project's secret-handling policy.
+`agents-coverage check` searches active non-evidence knowledge and candidates,
+excluding code and tests so implementation existence cannot masquerade as
+documentation preservation. `record onboarding` refuses an incomplete anchor
+result. Legacy repair can explicitly recapture from a trusted file or Git ref.
 
 ## State and migrations
 
@@ -159,6 +173,11 @@ healthy repository unusable.
 Semantic freshness is intentionally not claimed by deterministic validation.
 That is the job of `$memory-audit`, with evidence and confidence in every
 finding.
+
+Likewise, AGENTS lexical coverage is a conservative loss detector rather than
+semantic proof. It catches the disappearance of machine-identifiable anchors;
+the Skill's source ledger and evidence review decide whether prose meaning,
+ownership, and freshness were preserved.
 
 ## Deliberate non-goals
 

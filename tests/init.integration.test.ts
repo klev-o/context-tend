@@ -2,6 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
+  AGENTS_COVERAGE_PATH,
   applyInitPlan,
   buildInitPlan,
   countManagedBlocks,
@@ -30,6 +31,11 @@ describe("safe initialization", () => {
     expect(Object.values(registry.sources).some((source) => source.role === "roadmap")).toBe(true);
     expect(state.lastOnboarding).toBeNull();
     expect(
+      JSON.parse(
+        await readFile(path.join(root, ...AGENTS_COVERAGE_PATH.split("/")), "utf8"),
+      ),
+    ).toMatchObject({ version: 1, source: { path: "AGENTS.md" } });
+    expect(
       await readFile(
         path.join(root, ".agents", "skills", "context-onboard", "SKILL.md"),
         "utf8",
@@ -48,10 +54,17 @@ describe("safe initialization", () => {
     const first = await readFile(path.join(root, "AGENTS.md"), "utf8");
     expect(first).toContain(original.trim());
     expect(countManagedBlocks(first)).toBe(1);
+    const firstCoverage = await readFile(
+      path.join(root, ...AGENTS_COVERAGE_PATH.split("/")),
+      "utf8",
+    );
 
     const secondPlan = await buildInitPlan(root, { now });
     await applyInitPlan(secondPlan, now);
     expect(await readFile(path.join(root, "AGENTS.md"), "utf8")).toBe(first);
+    expect(
+      await readFile(path.join(root, ...AGENTS_COVERAGE_PATH.split("/")), "utf8"),
+    ).toBe(firstCoverage);
     expect(countManagedBlocks(first)).toBe(1);
   });
 

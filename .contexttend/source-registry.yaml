@@ -3,7 +3,7 @@ sources:
   openai-codex-docs:
     authority: authoritative
     url: https://learn.chatgpt.com/docs
-    lastChecked: 2026-09-04
+    lastChecked: 2026-09-05
     relevantTopics:
       - agents-md
       - skills

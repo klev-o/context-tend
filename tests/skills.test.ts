@@ -39,10 +39,25 @@ describe("semantic Skill contracts", () => {
       expect(content).toContain(classification);
     }
     expect(content).toContain("Ask for confirmation");
+    expect(content).toContain("source-coverage ledger");
+    expect(content).toContain("contexttend agents-coverage check");
     expect(content).toContain("contexttend record onboarding");
     expect(content.indexOf("Read `AGENTS.md` completely")).toBeLessThan(
       content.indexOf("Inventory conventional documentation"),
     );
+  });
+
+  it("onboarding ships a detailed lossless AGENTS migration protocol", () => {
+    const content =
+      SYSTEM_ASSET_CONTENTS[
+        ".agents/skills/context-onboard/references/agents-migration.md"
+      ] ?? "";
+    expect(content).toContain("## Conservation invariant");
+    expect(content).toContain("## Build the source-coverage ledger");
+    expect(content).toContain("Git history is recovery evidence");
+    expect(content).toContain("A file that says only");
+    expect(content).toContain("## Coverage gate");
+    expect(content.length).toBeGreaterThan(3000);
   });
 
   it("bootstrap treats initialized Unknown placeholders as missing knowledge", () => {

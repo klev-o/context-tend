@@ -2,6 +2,10 @@ import { lstat, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { adapters } from "./adapters/index.js";
+import {
+  AGENTS_COVERAGE_PATH,
+  loadAgentCoverageSnapshot,
+} from "./agents-coverage.js";
 import { SYSTEM_ASSET_HASHES } from "./assets.js";
 import type {
   Finding,
@@ -295,6 +299,39 @@ async function validateManagedAssets(root: string, state: State | null): Promise
   return findings;
 }
 
+async function validateAgentCoverageBaseline(
+  root: string,
+  state: State | null,
+): Promise<Finding[]> {
+  const baseline = resolveRegistryPath(root, AGENTS_COVERAGE_PATH);
+  if (!(await exists(baseline))) {
+    return state?.lastOnboarding == null
+      ? [{
+          code: "CT115",
+          level: "warning",
+          severity: "P1",
+          message: "Pre-onboarding AGENTS coverage baseline is missing",
+          path: AGENTS_COVERAGE_PATH,
+          remediation:
+            "Capture the original AGENTS source before semantic onboarding.",
+        }]
+      : [];
+  }
+  try {
+    await loadAgentCoverageSnapshot(root);
+    return [];
+  } catch (error) {
+    return [{
+      code: "CT116",
+      level: "error",
+      severity: "P1",
+      message: error instanceof Error ? error.message : String(error),
+      path: AGENTS_COVERAGE_PATH,
+      remediation: "Re-capture the AGENTS coverage baseline from a trusted source.",
+    }];
+  }
+}
+
 async function validateGeneratedMarkers(
   root: string,
   registry: Registry,
@@ -380,6 +417,7 @@ export async function validateProject(projectRoot: string): Promise<ValidationRe
     }
   }
   findings.push(...(await validateManagedAssets(snapshot.root, state)));
+  findings.push(...(await validateAgentCoverageBaseline(snapshot.root, state)));
 
   const unique = deduplicate(findings);
   const errors = unique.filter((finding) => finding.level === "error").length;

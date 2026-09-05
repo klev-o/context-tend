@@ -20,5 +20,8 @@ No active MVP implementation phase remains.
   full harness audit, state recording, and final validation.
 - Phase 11: first-run semantic onboarding, reviewed AGENTS consolidation,
   implicit Codex routing, completion state, and self-update dogfooding.
+- Phase 12: lossless AGENTS migration protocol, automatic pre-onboarding anchor
+  baseline, deterministic coverage CLI/gate, and regression coverage from a
+  real oversized-AGENTS failure case.
 
 Move completed work out of Active only after verification evidence exists.

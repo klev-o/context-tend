@@ -1,4 +1,5 @@
 import type { State } from "./domain.js";
+import { checkAgentCoverage } from "./agents-coverage.js";
 import { hashRegisteredSources } from "./init.js";
 import {
   loadExternalSourceRegistry,
@@ -33,6 +34,16 @@ export async function recordEvent(
   const next: State = { ...previous, updatedAt: timestamp };
 
   if (event === "onboarding") {
+    const coverage = await checkAgentCoverage(projectRoot);
+    if (!coverage.valid) {
+      const examples = coverage.anchors.missing
+        .slice(0, 8)
+        .map((anchor) => anchor.value)
+        .join(", ");
+      throw new Error(
+        `Cannot record onboarding: ${coverage.anchors.missing.length} AGENTS anchor(s) are absent from the active knowledge corpus${examples ? ` (${examples})` : ""}. Run contexttend agents-coverage check and complete the migration first.`,
+      );
+    }
     next.lastOnboarding = timestamp;
   } else if (event === "sync") {
     next.lastSync = timestamp;

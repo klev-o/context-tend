@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "source": {
+    "path": "AGENTS.md",
+    "gitRef": "HEAD",
+    "hash": "7715f2971fdcb30f67c4afcc143ac4ca5cee226e756ef11568f09090e58e8197",
+    "lineCount": 15
+  },
+  "anchors": [
+    {
+      "kind": "path",
+      "value": "AGENTS.md",
+      "lines": [
+        1
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "heading": "AGENTS.md",
+      "startLine": 1,
+      "endLine": 15
+    }
+  ]
+}

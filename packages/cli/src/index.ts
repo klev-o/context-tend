@@ -3,14 +3,17 @@
 import path from "node:path";
 
 import {
+  AGENTS_COVERAGE_PATH,
   CONTEXTTEND_VERSION,
   RECORD_EVENTS,
   activeAdapterIds,
   applyInitPlan,
   applyUpdatePlan,
+  buildAgentCoverageSnapshot,
   buildInitPlan,
   buildUpdatePlan,
   diffProject,
+  checkAgentCoverage,
   discoverWithAdapters,
   getProjectStatus,
   migrateProjectState,
@@ -18,6 +21,7 @@ import {
   scanProject,
   summarizeInitPlan,
   validateProject,
+  writeAgentCoverageSnapshot,
   type ChangePlan,
   type Finding,
   type RecordEvent,
@@ -253,6 +257,88 @@ program
       line(`${adapter.detection.detected ? "✓" : "-"} ${adapter.name}: ${adapter.detection.confidence}`);
       for (const evidence of adapter.detection.evidence) line(`  ${evidence}`);
     }
+  });
+
+const agentsCoverage = program
+  .command("agents-coverage")
+  .description("Guard lossless migration of detailed AGENTS.md knowledge");
+
+agentsCoverage
+  .command("snapshot")
+  .description("Capture a safe pre-migration AGENTS anchor baseline")
+  .argument("[path]", "repository path", ".")
+  .option("--source <path>", "source path inside the repository", "AGENTS.md")
+  .option("--git-ref <ref>", "read the source path from this Git ref")
+  .option("--baseline <path>", "coverage baseline path", AGENTS_COVERAGE_PATH)
+  .option("--dry-run", "preview only (the default)")
+  .option("--apply", "write the generated baseline")
+  .option("--json", "emit machine-readable JSON")
+  .action(async (target: string, options: OutputOptions & {
+    source: string;
+    gitRef?: string;
+    baseline: string;
+    dryRun?: boolean;
+    apply?: boolean;
+  }) => {
+    if (options.apply && options.dryRun) {
+      throw new Error("--apply and --dry-run cannot be used together");
+    }
+    const root = projectRoot(target);
+    const snapshot = await buildAgentCoverageSnapshot(root, {
+      sourcePath: options.source,
+      gitRef: options.gitRef,
+    });
+    if (options.apply) {
+      await writeAgentCoverageSnapshot(root, snapshot, options.baseline);
+    }
+    if (options.json) {
+      writeJson({ applied: options.apply === true, baseline: options.baseline, snapshot });
+      return;
+    }
+    line("AGENTS coverage snapshot");
+    line("");
+    line(`Source     ${snapshot.source.gitRef ? `${snapshot.source.gitRef}:` : ""}${snapshot.source.path}`);
+    line(`Lines      ${snapshot.source.lineCount}`);
+    line(`Sections   ${snapshot.sections.length}`);
+    line(`Anchors    ${snapshot.anchors.length}`);
+    line(`Baseline   ${options.baseline} (${options.apply ? "written" : "preview"})`);
+    if (!options.apply) line("No files changed. Re-run with --apply after reviewing the source.");
+  });
+
+agentsCoverage
+  .command("check")
+  .description("Check AGENTS anchors against the active knowledge corpus")
+  .argument("[path]", "repository path", ".")
+  .option("--baseline <path>", "coverage baseline path", AGENTS_COVERAGE_PATH)
+  .option("--target <paths...>", "override knowledge paths to scan")
+  .option("--json", "emit machine-readable JSON")
+  .action(async (target: string, options: OutputOptions & {
+    baseline: string;
+    target?: string[];
+  }) => {
+    const result = await checkAgentCoverage(projectRoot(target), {
+      baselinePath: options.baseline,
+      targetPaths: options.target,
+    });
+    if (options.json) {
+      writeJson(result);
+    } else {
+      line("AGENTS migration coverage");
+      line("");
+      line(`Anchors    ${result.anchors.preserved}/${result.anchors.total} preserved`);
+      line(`Sections   ${result.sections.headingsFound}/${result.sections.total} headings discoverable`);
+      line(`Files      ${result.scannedFiles.length} knowledge files scanned`);
+      if (result.anchors.missing.length > 0) {
+        line("");
+        line("Missing anchors");
+        for (const anchor of result.anchors.missing) {
+          line(`- ${anchor.value} [${anchor.kind}; source lines ${anchor.lines.join(", ")}]`);
+        }
+      }
+      line("");
+      line(result.valid ? "Coverage: complete" : "Coverage: incomplete");
+    }
+    if (!result.valid) process.exitCode = 1;
   });
 
 program

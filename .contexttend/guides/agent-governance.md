@@ -29,6 +29,8 @@ file or infer product intent from implementation evidence.
 Move uncertain knowledge through observation -> candidate -> review -> durable
 knowledge. Put unresolved proposals in `.contexttend/candidates/` with claim,
 role, evidence, confidence, proposed owner, and recommended destination.
+A candidate must preserve the substance needed for later review. A Git ref
+or statement that old content existed is supporting evidence, not a claim.
 
 ## Evidence
 
