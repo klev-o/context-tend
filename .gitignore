@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
+.contexttend/audits/*.md
+.contexttend/candidates/*
+!.contexttend/candidates/.gitkeep

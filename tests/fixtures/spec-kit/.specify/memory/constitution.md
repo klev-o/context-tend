@@ -1,0 +1,3 @@
+# Constitution
+
+Specifications are authoritative.

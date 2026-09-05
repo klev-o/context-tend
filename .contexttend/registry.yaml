@@ -1,0 +1,95 @@
+version: 1
+sources:
+  repository-readme:
+    path: README.md
+    role: reference
+    authority: supporting
+    owner: human
+    adapter: generic
+    description: Repository overview
+  architecture:
+    path: ARCHITECTURE.md
+    role: architecture
+    authority: canonical
+    owner: shared
+    adapter: generic
+    description: Architecture description
+  decisions:
+    path: docs/decisions
+    role: decisions
+    authority: canonical
+    owner: shared
+    adapter: generic
+    description: Architectural decisions
+  implementation:
+    path:
+      - packages
+    role: implementation-context
+    authority: evidence
+    owner: external
+    adapter: generic
+    description: Implementation evidence
+  verification:
+    path:
+      - tests
+    role: verification
+    authority: evidence
+    owner: external
+    adapter: generic
+    description: Executable verification evidence
+  goals:
+    path: docs/GOALS.md
+    role: goals
+    authority: canonical
+    owner: human
+    adapter: native
+    description: Project goals; unknowns require human confirmation
+  product:
+    path: docs/PRODUCT.md
+    role: product
+    authority: canonical
+    owner: human
+    adapter: native
+    description: Product intent; code is evidence rather than authority
+  roadmap:
+    path: docs/PLANS.md
+    role: roadmap
+    authority: canonical
+    owner: shared
+    adapter: native
+    description: Active and completed durable plans
+  implementation-context:
+    path: docs/context/
+    role: implementation-context
+    authority: canonical
+    owner: agent
+    adapter: native
+    description: Evidence-backed implementation context
+  agent-instructions:
+    path: AGENTS.md
+    role: instructions
+    authority: canonical
+    owner: shared
+    adapter: native
+    description: Repository agent instruction map
+  contexttend-installation:
+    path: docs/_meta/contexttend.md
+    role: generated
+    authority: generated
+    owner: system
+    adapter: native
+    description: ContextTend installation metadata
+  execution-plans:
+    path: docs/plans
+    role: execution-plan
+    authority: supporting
+    owner: shared
+    adapter: generic
+    description: Detailed implementation and execution plans
+  research:
+    path: docs/research
+    role: reference
+    authority: supporting
+    owner: human
+    adapter: generic
+    description: Project research and source analysis

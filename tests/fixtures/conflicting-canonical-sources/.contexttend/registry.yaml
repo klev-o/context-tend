@@ -1,0 +1,12 @@
+version: 1
+sources:
+  first-product:
+    path: PRODUCT-A.md
+    role: product
+    authority: canonical
+    owner: human
+  second-product:
+    path: PRODUCT-B.md
+    role: product
+    authority: canonical
+    owner: human

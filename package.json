@@ -1,0 +1,26 @@
+{
+  "name": "contexttend-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Living project knowledge governance for coding agents",
+  "type": "module",
+  "packageManager": "pnpm@11.19.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "pnpm --recursive --sort build",
+    "typecheck": "pnpm --recursive --sort typecheck",
+    "lint": "pnpm --recursive --sort lint",
+    "test": "pnpm build && vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "contexttend": "node packages/cli/dist/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "20.19.43",
+    "tsup": "8.5.1",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "contexttend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "contexttend": "./dist/index.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@contexttend/core": "workspace:*",
+    "commander": "14.0.3"
+  }
+}

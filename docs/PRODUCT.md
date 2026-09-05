@@ -1,0 +1,51 @@
+# Product
+
+Authority: human-owned canonical product knowledge.
+
+## Problem and users
+
+Long-lived repositories accumulate READMEs, instructions, architecture,
+decisions, specs, plans, generated documentation, and framework-owned
+knowledge. Eventually agents and maintainers cannot reliably tell which source
+is authoritative, current, writable, or relevant to a task.
+
+ContextTend is for maintainers and coding-agent users who want durable project
+knowledge governance without migrating to another development framework.
+
+## Product behavior
+
+ContextTend answers four questions:
+
+1. Where does truth for each semantic role live?
+2. How can structural drift and semantic staleness be found?
+3. Who is allowed to change each source?
+4. How should an agent route to only the context relevant to a task?
+
+The CLI deterministically scans an existing repository, detects knowledge
+systems, proposes a typed Knowledge Registry, creates only missing native
+sources, validates infrastructure, and tracks stable hashes. Preview is the
+default; writes require explicit `--apply`.
+
+Repo-scoped Codex Skills then perform semantic bootstrap, documentation-impact
+sync, memory audit, and fresh harness audit. Uncertain observations become
+candidates, not fabricated canonical truth.
+
+On the first substantive Codex task after init, semantic onboarding starts
+while `lastOnboarding` is unset. It begins with the complete existing
+`AGENTS.md`, inventories overlapping repository knowledge, coordinates focused
+audits and bootstrap, and presents a reviewable routing plan. Approved changes
+leave AGENTS as a concise operational map, populate the registered canonical
+sources, record completion, and return to the user's original request.
+
+## Constraints
+
+- Existing project and external-framework files must be preserved.
+- Pre-existing user-authored knowledge must not be shortened or removed without
+  explicit migration authority and a reviewable plan.
+- An LLM must not perform filesystem skeleton creation, hashing, comparison,
+  schema validation, migration, adapter detection, state, or conflict
+  resolution.
+- Human product intent cannot be inferred from implementation alone.
+- The MVP is local-first and sends no repository content over the network.
+- No publish, deploy, commit, push, production mutation, or credential use is
+  part of the product lifecycle.

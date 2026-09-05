@@ -1,0 +1,28 @@
+version: 1
+sources:
+  openai-codex-docs:
+    authority: authoritative
+    url: https://learn.chatgpt.com/docs
+    lastChecked: 2026-09-04
+    relevantTopics:
+      - agents-md
+      - skills
+      - plugins
+      - configuration
+      - changelog
+  openai-codex-engineering:
+    authority: experimental-practice
+    url: https://openai.com/index/harness-engineering/
+    lastChecked: 2026-09-04
+    relevantTopics:
+      - progressive-disclosure
+      - repository-knowledge
+      - mechanical-validation
+  github-spec-kit:
+    authority: authoritative
+    url: https://github.com/github/spec-kit
+    lastChecked: 2026-09-04
+    relevantTopics:
+      - adapter
+      - specs
+      - skills-mode
