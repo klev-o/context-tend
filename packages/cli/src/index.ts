@@ -8,24 +8,36 @@ import {
   RECORD_EVENTS,
   activeAdapterIds,
   applyInitPlan,
+  applyIntegrationPlan,
   applyUpdatePlan,
   buildAgentCoverageSnapshot,
+  buildClaudeBridgePlan,
+  buildCodexHooksPlan,
   buildInitPlan,
   buildUpdatePlan,
+  captureWorkRecovery,
+  checkpointWork,
+  completeWork,
   diffProject,
   checkAgentCoverage,
   discoverWithAdapters,
   getProjectStatus,
+  getWorkStatus,
   migrateProjectState,
   recordEvent,
   scanProject,
+  startWork,
   summarizeInitPlan,
   validateProject,
   writeAgentCoverageSnapshot,
   type ChangePlan,
   type Finding,
+  type ActiveWorkStatus,
   type RecordEvent,
   type ValidationResult,
+  type IntegrationPlan,
+  type WorkRecovery,
+  type WorkStatusResult,
 } from "@contexttend/core";
 import { Command, InvalidArgumentError } from "commander";
 
@@ -66,6 +78,52 @@ function showValidation(result: ValidationResult): void {
   );
 }
 
+const WORK_STATUS_FILE_PREVIEW = 25;
+
+function compactRecovery(recovery: WorkRecovery | null): unknown {
+  if (recovery === null) return null;
+  return {
+    capturedAt: recovery.capturedAt,
+    source: recovery.source,
+    gitHead: recovery.gitHead,
+    totalChangedFiles: recovery.totalChangedFiles,
+    truncated:
+      recovery.truncated ||
+      recovery.changedFiles.length > WORK_STATUS_FILE_PREVIEW,
+    changedFiles: recovery.changedFiles
+      .slice(0, WORK_STATUS_FILE_PREVIEW)
+      .map(({ path: filePath, status, previousPath }) => ({
+        path: filePath,
+        status,
+        ...(previousPath === undefined ? {} : { previousPath }),
+      })),
+  };
+}
+
+function compactWorkStatus(result: WorkStatusResult): unknown {
+  const work = result.work;
+  return {
+    active: result.active,
+    stale: result.stale,
+    reasons: result.reasons,
+    work:
+      work === null
+        ? null
+        : {
+            id: work.id,
+            title: work.title,
+            status: work.status,
+            path: work.path,
+            recoveryPath: work.recoveryPath,
+            startedAt: work.startedAt,
+            checkpointedAt: work.checkpointedAt,
+          },
+    currentExists: result.currentExists,
+    currentBytes: result.currentBytes,
+    recovery: compactRecovery(result.liveRecovery),
+  };
+}
+
 function showPlan(title: string, plan: ChangePlan, applied: boolean): void {
   line("ContextTend");
   line("");
@@ -100,6 +158,18 @@ function setValidationExitCode(result: ValidationResult): void {
   if (!result.valid) process.exitCode = 1;
 }
 
+function showIntegrationPlan(plan: IntegrationPlan, applied: boolean): void {
+  const change = plan.change;
+  line(`ContextTend ${plan.integration}`);
+  line("");
+  line(`Repository  ${plan.root}`);
+  line(`${change.kind === "create" ? "+" : change.kind === "update" ? "~" : "="} ${change.path} — ${change.reason}`);
+  if (!applied && change.kind !== "skip") {
+    line("");
+    line("No files changed. Re-run with --apply after reviewing the integration.");
+  }
+}
+
 function parseRecordEvent(value: string): RecordEvent {
   if ((RECORD_EVENTS as readonly string[]).includes(value)) {
     return value as RecordEvent;
@@ -107,6 +177,11 @@ function parseRecordEvent(value: string): RecordEvent {
   throw new InvalidArgumentError(
     `Expected one of: ${RECORD_EVENTS.join(", ")}`,
   );
+}
+
+function parseActiveWorkStatus(value: string): ActiveWorkStatus {
+  if (value === "active" || value === "blocked") return value;
+  throw new InvalidArgumentError("Expected active or blocked");
 }
 
 const program = new Command();
@@ -160,7 +235,7 @@ program
   .action(async (target: string, options: OutputOptions) => {
     const status = await getProjectStatus(projectRoot(target));
     if (options.json) {
-      writeJson(status);
+      writeJson({ ...status, work: compactWorkStatus(status.work) });
       return;
     }
     const sources = Object.values(status.registry.sources);
@@ -180,9 +255,192 @@ program
     line(`Last sync        ${status.state.lastSync ?? "never"}`);
     line(`Last memory audit ${status.state.lastMemoryAudit ?? "never"}`);
     line(`Last harness audit ${status.state.lastHarnessAudit ?? "never"}`);
+    line(
+      `Active work      ${status.work.work?.title ?? "none"}${status.work.stale ? " (stale)" : ""}`,
+    );
     line("");
     line(`Knowledge health: ${status.validation.valid ? "healthy" : "needs attention"}`);
   });
+
+const work = program
+  .command("work")
+  .description("Manage compact, portable active-work checkpoints");
+
+work
+  .command("status")
+  .description("Compare active-work metadata with the live repository state")
+  .argument("[path]", "repository path", ".")
+  .option("--json", "emit machine-readable JSON")
+  .option("--verbose", "include full recovery hashes in JSON and output")
+  .action(async (
+    target: string,
+    options: OutputOptions & { verbose?: boolean },
+  ) => {
+    const result = await getWorkStatus(projectRoot(target));
+    if (options.json) {
+      writeJson(options.verbose ? result : compactWorkStatus(result));
+      return;
+    }
+    line("ContextTend active work");
+    line("");
+    if (!result.active || result.work === null) {
+      line("Active work     none");
+      line("Resume action   start a new checkpoint only for substantive work");
+      return;
+    }
+    line(`Title           ${result.work.title}`);
+    line(`Status          ${result.work.status}`);
+    line(`Checkpoint      ${result.work.checkpointedAt}`);
+    line(`Document        ${result.work.path}`);
+    line(`Recovery        ${result.work.recoveryPath}`);
+    line(`Freshness       ${result.stale ? "stale" : "current"}`);
+    if (result.reasons.length > 0) {
+      line("");
+      line("Recovery findings");
+      for (const reason of result.reasons) line(`- ${reason}`);
+    }
+    const changed = result.liveRecovery?.changedFiles ?? [];
+    if (changed.length > 0) {
+      line("");
+      line("Current changed files");
+      const shown = options.verbose
+        ? changed
+        : changed.slice(0, WORK_STATUS_FILE_PREVIEW);
+      for (const file of shown) line(`- ${file.status} ${file.path}`);
+      if (
+        result.liveRecovery &&
+        result.liveRecovery.totalChangedFiles > shown.length
+      ) {
+        line(
+          `- ... ${result.liveRecovery.totalChangedFiles - shown.length} more; use --verbose`,
+        );
+      }
+    }
+  });
+
+work
+  .command("start")
+  .description("Start one substantive work item and create its compact template")
+  .argument("[path]", "repository path", ".")
+  .requiredOption("--title <title>", "short work title")
+  .option("--objective <objective>", "concise objective; defaults to title")
+  .option("--json", "emit machine-readable JSON")
+  .action(async (
+    target: string,
+    options: OutputOptions & { title: string; objective?: string },
+  ) => {
+    const result = await startWork(projectRoot(target), {
+      title: options.title,
+      objective: options.objective,
+    });
+    if (options.json) writeJson(compactWorkStatus(result));
+    else {
+      line(`Started active work: ${result.work?.title ?? options.title}`);
+      line(`Edit ${result.work?.path ?? ".contexttend/work/current.md"} and run contexttend work checkpoint.`);
+    }
+  });
+
+work
+  .command("checkpoint")
+  .description("Validate current.md and record its repository fingerprint")
+  .argument("[path]", "repository path", ".")
+  .option(
+    "--state <state>",
+    "active work state: active or blocked",
+    parseActiveWorkStatus,
+  )
+  .option("--json", "emit machine-readable JSON")
+  .action(async (
+    target: string,
+    options: OutputOptions & { state?: ActiveWorkStatus },
+  ) => {
+    const result = await checkpointWork(projectRoot(target), {
+      status: options.state,
+    });
+    if (options.json) writeJson(compactWorkStatus(result));
+    else {
+      line(`Checkpoint recorded at ${result.work?.checkpointedAt ?? "unknown"}`);
+      line(`Freshness: ${result.stale ? "stale" : "current"}`);
+    }
+  });
+
+work
+  .command("recover")
+  .description("Capture deterministic recovery evidence without semantic inference")
+  .argument("[path]", "repository path", ".")
+  .option("--quiet", "write no output on success")
+  .option("--json", "emit machine-readable JSON")
+  .option("--verbose", "include changed-file hashes in JSON")
+  .action(async (
+    target: string,
+    options: OutputOptions & { quiet?: boolean; verbose?: boolean },
+  ) => {
+    const recovery = await captureWorkRecovery(projectRoot(target));
+    if (options.json) {
+      writeJson(options.verbose ? recovery : compactRecovery(recovery));
+    }
+    else if (!options.quiet) {
+      line(
+        recovery === null
+          ? "No active work; recovery snapshot was not changed."
+          : `Recovery captured at ${recovery.capturedAt}`,
+      );
+    }
+  });
+
+work
+  .command("complete")
+  .description("Close active work only when its checkpoint matches the repository")
+  .argument("[path]", "repository path", ".")
+  .option("--json", "emit machine-readable JSON")
+  .action(async (target: string, options: OutputOptions) => {
+    const state = await completeWork(projectRoot(target));
+    if (options.json) writeJson(state);
+    else line(`Completed active work: ${state.lastCompletedWork?.title ?? "unknown"}`);
+  });
+
+function addIntegrationCommand(
+  name: "install-codex-hooks" | "install-claude-bridge",
+  description: string,
+  builder: (root: string) => Promise<IntegrationPlan>,
+): void {
+  work
+    .command(name)
+    .description(description)
+    .argument("[path]", "repository path", ".")
+    .option("--dry-run", "preview only (the default)")
+    .option("--apply", "apply the marker-bounded integration")
+    .option("--json", "emit machine-readable JSON")
+    .action(async (
+      target: string,
+      options: OutputOptions & { apply?: boolean; dryRun?: boolean },
+    ) => {
+      if (options.apply && options.dryRun) {
+        throw new Error("--apply and --dry-run cannot be used together");
+      }
+      const plan = await builder(projectRoot(target));
+      if (!options.apply) {
+        if (options.json) writeJson({ applied: false, plan });
+        else showIntegrationPlan(plan, false);
+        return;
+      }
+      const change = await applyIntegrationPlan(plan);
+      if (options.json) writeJson({ applied: change.kind !== "skip", plan });
+      else showIntegrationPlan(plan, true);
+    });
+}
+
+addIntegrationCommand(
+  "install-codex-hooks",
+  "Preview or merge optional low-context Codex lifecycle hooks",
+  buildCodexHooksPlan,
+);
+
+addIntegrationCommand(
+  "install-claude-bridge",
+  "Preview or upsert a no-hooks CLAUDE.md continuity bridge",
+  buildClaudeBridgePlan,
+);
 
 for (const commandName of ["doctor", "validate"] as const) {
   program

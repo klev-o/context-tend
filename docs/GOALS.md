@@ -15,6 +15,9 @@ Authority: human-owned canonical product intent.
   create only what is missing.
 - Let normal Codex work trigger one transparent semantic onboarding pass after
   deterministic init, without requiring users to memorize Skill commands.
+- Let substantive interrupted work resume from a clean Codex, Claude, or other
+  repository-capable agent session using one compact checkpoint plus verified
+  working-tree evidence.
 
 ## Non-goals
 
@@ -40,5 +43,8 @@ or task trackers.
   the user's original task.
 - Mechanical facts are handled by deterministic code; semantic claims include
   evidence, confidence, ownership, and a reviewable action.
+- A substantive task interrupted after repository mutation is reported stale,
+  resumes after Git/filesystem and test reconciliation, and cannot be marked
+  complete until a fresh bounded checkpoint is recorded.
 - The project remains local-first, portable, inspectable, and small enough to
   understand without operating infrastructure.

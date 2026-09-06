@@ -1,7 +1,11 @@
 import { readFile } from "node:fs/promises";
 
 import { activeAdapterIds, discoverWithAdapters } from "./adapters/index.js";
-import { SYSTEM_ASSET_CONTENTS, SYSTEM_ASSET_HASHES } from "./assets.js";
+import {
+  CONTEXTTEND_META,
+  SYSTEM_ASSET_CONTENTS,
+  SYSTEM_ASSET_HASHES,
+} from "./assets.js";
 import {
   CONTEXTTEND_VERSION,
   type ChangePlan,
@@ -87,6 +91,16 @@ export async function buildUpdatePlan(projectRoot: string): Promise<ChangePlan> 
     }
     changes.push(plannedFile(assetPath, desired, current, "update managed asset"));
   }
+
+  const metadataPath = "docs/_meta/contexttend.md";
+  changes.push(
+    plannedFile(
+      metadataPath,
+      CONTEXTTEND_META,
+      await readOptional(resolveRegistryPath(snapshot.root, metadataPath)),
+      "regenerate ContextTend installation metadata",
+    ),
+  );
 
   const agents = await readOptional(resolveRegistryPath(snapshot.root, "AGENTS.md"));
   const original = agents ?? "";

@@ -21,21 +21,27 @@ The TypeScript core owns facts that can be reproduced without a model:
 bounded filesystem scanning, Git status, manifest/convention detection, path
 containment, schema validation, SHA-256 hashing, Markdown links, adapter
 detection, state, migrations, managed blocks, AGENTS lexical coverage, and
-conflict-safe writes.
+conflict-safe writes. Active-work fingerprints, checkpoint structure/size,
+Codex hook merging, and Claude bridge merging stay on this deterministic side.
 
-The five Codex Skills own semantic work: first-run onboarding, selecting
+The six Codex Skills own semantic work: first-run onboarding, selecting
 relevant sources, deciding whether knowledge is stale or contradictory,
 classifying candidates, applying the documentation-impact matrix, and
-reviewing current harness guidance. The CLI never invokes an LLM.
+reviewing current harness guidance. `$context-work` additionally owns the
+semantic meaning of an active handoff snapshot. The CLI never invokes an LLM.
 
 ## Packages
 
 - `packages/core` has no terminal UI. It exposes domain schemas, scanner,
-  adapters, plan/apply operations, validation, diff, migration, and state APIs.
+  adapters, plan/apply operations, validation, diff, migration, state,
+  active-work, recovery, and optional integration APIs.
 - `packages/cli` presents the core through Commander. Mutating lifecycle
   commands are non-interactive and preview-only unless `--apply` is explicit.
 - `.agents/skills` is installed per repository by `init`, matching current
   Codex repo-Skill discovery.
+- `.contexttend/hooks/codex.mjs` is a dependency-free managed runtime.
+  `.codex/hooks.json` is not installed by init; the explicit integration
+  command merges reviewed handlers into existing project hooks.
 
 The dependency direction is `cli -> core`. Project repositories do not need a
 runtime service, database, daemon, or network connection.
@@ -112,6 +118,10 @@ target changed after preview. Writes are additive or bounded:
 - no command deletes documents, edits application code, commits, pushes, or
   sends repository content over the network.
 
+Optional Codex hooks and the Claude bridge use the same preview/apply and
+before-hash conflict pattern. Existing handlers and user-authored rules are
+preserved around ContextTend-owned entries or markers.
+
 `$context-onboard` may later migrate semantic knowledge only after an
 evidence-backed `ONBOARDING PLAN`. It must write and validate destinations
 before removing source text, and it requires confirmation before changing
@@ -136,9 +146,11 @@ result. Legacy repair can explicitly recapture from a trusted file or Git ref.
 
 `.contexttend/state.json` records schema/tool versions, onboarding/sync/audit
 timestamps, active adapters, registered-source baselines, managed-asset hashes,
-and the managed `AGENTS.md` block hash. `lastOnboarding` is backward-compatible
-and starts as null; `contexttend record onboarding` sets it only after the
-semantic workflow succeeds.
+the managed `AGENTS.md` block hash, one optional `activeWork` pointer, and the
+last completed work summary. Schema v2 introduces active work; migration from
+v1 adds null lifecycle fields without inventing a task. `lastOnboarding` starts
+as null; `contexttend record onboarding` sets it only after the semantic
+workflow succeeds.
 
 `contexttend diff` compares current hashes with the last init/sync baseline.
 `contexttend record sync` accepts a new baseline only after the semantic
@@ -146,8 +158,48 @@ workflow succeeds. Audit records only update their completion timestamps and,
 for harness audits, optional external-source freshness.
 
 Migrations are explicit, ordered, deterministic, dry-run by default, and
-limited to machine state and managed infrastructure. The v0-to-v1 migration is
-implemented; newer unknown schemas are rejected.
+limited to machine state and managed infrastructure. The v0-to-v2 and
+v1-to-v2 migrations are implemented; newer unknown schemas are rejected.
+
+## Active work continuity
+
+Active work is operational handoff state, not durable product truth and not a
+task methodology:
+
+```text
+state.activeWork
+      |
+      +--> .contexttend/work/current.md
+      |      compact semantic snapshot, maintained by $context-work
+      |
+      `--> .contexttend/work/recovery.json
+             deterministic Git/filesystem evidence, machine-local
+```
+
+Only one work item can be active. `start` creates a required-section template
+and baseline fingerprint. `checkpoint` validates the 8 KiB limit, refreshes the
+marker metadata and repository fingerprint, and records both hashes.
+`complete` refuses when the current file or live repository differs from that
+checkpoint. The completed file remains inspectable until a later explicit
+`start` replaces it; ContextTend does not create an unbounded task archive.
+
+Recovery fingerprinting includes Git HEAD, porcelain status, and hashes for
+changed paths. Non-Git repositories use the existing ignored-tree hashing
+rules. `.contexttend/` is excluded so recovery updates do not make themselves
+stale. `recovery.json` records paths and hashes, never content.
+
+On resume, the semantic Skill uses the current user message first, then actual
+repository/tests, canonical knowledge, `current.md`, and recovery evidence.
+This prevents a stale checkpoint from overriding observed facts. External
+Spec Kit/OpenSpec/Agent OS/GSD task artifacts retain ownership; the handoff
+stores only pointers and the resume delta.
+
+Codex hooks are optional. Session start injects only a short pointer capped at
+200 tokens. Mutation, interrupt, and session-end handlers refresh recovery with
+no model-visible output. Stop requests a single checkpoint continuation only
+when hashes differ and stops requesting when `stop_hook_active` is true. The
+runtime never parses `transcript_path`. Without hooks, `work status` computes
+the same live comparison during resume.
 
 ## Promotion model
 
@@ -181,8 +233,9 @@ ownership, and freshness were preserved.
 
 ## Deliberate non-goals
 
-No MCP server, database, vector index, knowledge graph, dashboard, watcher,
-hooks, session storage, rules compiler, task methodology, multi-agent runtime,
-automatic PR, or cloud backend is part of this MVP. First-run behavior is
-driven by the managed AGENTS instruction, Skill discovery, and explicit
-machine state rather than a background service.
+No MCP server, database, vector index, knowledge graph, dashboard, daemon,
+background watcher, transcript/session store, rules compiler, task
+methodology, multi-agent runtime, automatic PR, or cloud backend is part of
+this MVP. Optional lifecycle hooks only strengthen local recovery; first-run
+and resume behavior still works through managed instructions, Skill discovery,
+and explicit machine state.

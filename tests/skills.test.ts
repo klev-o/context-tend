@@ -8,6 +8,7 @@ describe("semantic Skill contracts", () => {
     ["context-sync", "No durable knowledge update required."],
     ["memory-audit", "stale architecture"],
     ["harness-audit", "Official OpenAI"],
+    ["context-work", "contexttend work checkpoint"],
   ])("%s is functional and contains its safety contract", (name, expected) => {
     const content = SYSTEM_ASSET_CONTENTS[`.agents/skills/${name}/SKILL.md`];
     expect(content).toBeDefined();
@@ -15,6 +16,19 @@ describe("semantic Skill contracts", () => {
     expect(content).toContain("## Workflow");
     expect(content).toContain(expected);
     expect(content?.length).toBeGreaterThan(700);
+  });
+
+  it("work continuity is portable, bounded, and transcript-free", () => {
+    const skill =
+      SYSTEM_ASSET_CONTENTS[".agents/skills/context-work/SKILL.md"] ?? "";
+    const guide =
+      SYSTEM_ASSET_CONTENTS[".contexttend/guides/work-continuity.md"] ?? "";
+    expect(skill).toContain("$context-sync");
+    expect(skill).toContain("git status --short");
+    expect(skill).toContain("below 8 KiB");
+    expect(skill).toContain("Never store raw prompts");
+    expect(guide).toContain("works without hooks");
+    expect(guide.replace(/\s+/g, " ")).toContain("actual repository/tests");
   });
 
   it("onboarding coordinates focused Skills and requires a reviewable migration", () => {

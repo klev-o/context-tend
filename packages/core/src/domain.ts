@@ -1,5 +1,5 @@
-export const CONTEXTTEND_VERSION = "0.1.0";
-export const SCHEMA_VERSION = 1;
+export const CONTEXTTEND_VERSION = "0.2.0";
+export const SCHEMA_VERSION = 2;
 
 export const BUILT_IN_ROLES = [
   "instructions",
@@ -68,8 +68,29 @@ export interface ManagedAssetState {
   version: string;
 }
 
+export const ACTIVE_WORK_STATUSES = ["active", "blocked"] as const;
+export type ActiveWorkStatus = (typeof ACTIVE_WORK_STATUSES)[number];
+
+export interface ActiveWorkState {
+  id: string;
+  title: string;
+  status: ActiveWorkStatus;
+  path: string;
+  recoveryPath: string;
+  startedAt: string;
+  checkpointedAt: string;
+  checkpointHash: string;
+  checkpointFingerprint: string;
+}
+
+export interface CompletedWorkState {
+  id: string;
+  title: string;
+  completedAt: string;
+}
+
 export interface State {
-  schemaVersion: 1;
+  schemaVersion: 2;
   contextTendVersion: string;
   installedAt: string;
   updatedAt: string;
@@ -81,6 +102,29 @@ export interface State {
   registeredHashes: Record<string, string | null>;
   managedAssets: Record<string, ManagedAssetState>;
   managedBlocks: Record<string, ManagedAssetState>;
+  activeWork: ActiveWorkState | null;
+  lastCompletedWork: CompletedWorkState | null;
+}
+
+export type WorkRecoverySource = "git" | "filesystem";
+
+export interface WorkRecoveryFile {
+  path: string;
+  status: string;
+  hash: string | null;
+  previousPath?: string;
+}
+
+export interface WorkRecovery {
+  version: 1;
+  workId: string;
+  capturedAt: string;
+  source: WorkRecoverySource;
+  gitHead: string | null;
+  fingerprint: string;
+  totalChangedFiles: number;
+  truncated: boolean;
+  changedFiles: WorkRecoveryFile[];
 }
 
 export interface Config {

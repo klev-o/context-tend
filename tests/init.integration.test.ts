@@ -41,6 +41,12 @@ describe("safe initialization", () => {
         "utf8",
       ),
     ).toContain("ONBOARDING PLAN");
+    expect(
+      await readFile(
+        path.join(root, ".agents", "skills", "context-work", "SKILL.md"),
+        "utf8",
+      ),
+    ).toContain("contexttend work status");
     expect(await readFile(path.join(root, "AGENTS.md"), "utf8")).toContain(
       "use `$context-onboard` first",
     );

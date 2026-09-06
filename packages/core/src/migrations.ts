@@ -39,13 +39,13 @@ export function migrateStateDocument(input: unknown, now = new Date()): Migratio
       changed: false,
     };
   }
-  if (from !== 0) {
+  if (from !== 0 && from !== 1) {
     throw new Error(`No deterministic migration exists from state schema ${from}`);
   }
 
   const timestamp = now.toISOString();
   const migrated = parseState({
-    schemaVersion: 1,
+    schemaVersion: 2,
     contextTendVersion:
       typeof raw["contextTendVersion"] === "string"
         ? raw["contextTendVersion"]
@@ -74,6 +74,8 @@ export function migrateStateDocument(input: unknown, now = new Date()): Migratio
       raw["managedBlocks"] !== null && typeof raw["managedBlocks"] === "object"
         ? raw["managedBlocks"]
         : {},
+    activeWork: null,
+    lastCompletedWork: null,
   });
   return {
     state: migrated,

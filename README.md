@@ -14,8 +14,10 @@ before creating anything.
 - native, generic, GitHub Spec Kit, OpenSpec, Agent OS, and GSD adapters;
 - schema, path, ownership, authority, link, asset, and adapter validation;
 - source hash diff and explicit sync/audit state;
-- five functional repo-scoped Codex Skills for onboarding, bootstrap, sync,
-  memory audit, and harness audit;
+- six functional repo-scoped Codex Skills for onboarding, bootstrap, active
+  work continuity, sync, memory audit, and harness audit;
+- interruption-safe active-work checkpoints with deterministic Git/filesystem
+  recovery and optional low-context Codex hooks;
 - local-only operation with no telemetry, model call, database, or daemon.
 
 ## Requirements and local setup
@@ -29,8 +31,10 @@ pnpm build
 pnpm contexttend --help
 ```
 
-The packages are not published by this repository. Use the local command during
-MVP development.
+The packages are not published by this repository. Run `pnpm install` and
+`pnpm build` once in the ContextTend checkout. Keep running `pnpm contexttend`
+from that checkout and pass the target repository as the command path; do not
+install ContextTend inside every target project.
 
 ## First run
 
@@ -72,6 +76,97 @@ symbols from that baseline are absent from active documentation or a
 self-contained candidate. A Git-history pointer alone is not preservation.
 A successful run records onboarding and resumes the original task.
 
+## Interruption-safe active work
+
+For an ordinary small task, keep working normally. For a substantive
+multi-phase task, the managed `AGENTS.md` instruction lets Codex select
+`$context-work` automatically. You can also invoke it directly:
+
+```text
+$context-work start
+$context-work checkpoint
+$context-work resume
+$context-work complete
+```
+
+The Skill starts one active item, fills
+`.contexttend/work/current.md` with a compact semantic snapshot, and calls the
+deterministic CLI to record hashes. Checkpoints are updated after material
+phases, decisions, verification, or blockers—not after every command.
+`current.md` is capped at 8 KiB and is replaced in place rather than used as a
+growing log.
+
+After an interruption, open the same repository in a fresh coding-agent
+session and write:
+
+```text
+Continue.
+```
+
+If that agent follows `AGENTS.md`, it sees non-null `activeWork`, loads
+`$context-work resume`, reads the checkpoint, runs `work status`, inspects Git
+status/diffs and relevant tests, and continues from the first unfinished
+verified step. A more specific message such as “the run stopped after the
+migration; inspect Git and continue” is useful current intent and improves
+recovery, but repository and test evidence are still checked.
+
+The deterministic CLI can also be driven manually from the ContextTend
+checkout:
+
+```powershell
+pnpm contexttend -- work start C:\path\to\repository --title "Add billing" --objective "Implement and verify invoice creation"
+pnpm contexttend -- work status C:\path\to\repository
+# Edit .contexttend/work/current.md as work progresses
+pnpm contexttend -- work checkpoint C:\path\to\repository
+pnpm contexttend -- work checkpoint C:\path\to\repository --state blocked
+pnpm contexttend -- work complete C:\path\to\repository
+```
+
+`work complete` refuses a stale checkpoint. The semantic snapshot must first
+match the actual repository fingerprint and required document structure.
+Normal status output shows at most 25 changed paths and omits hashes from JSON
+to keep agent context small; add `--verbose` only for a deliberate machine-level
+diagnostic.
+
+### Optional Codex hooks
+
+The portable workflow works without hooks. To improve recovery when Codex is
+interrupted abruptly, preview and explicitly install the repository hooks:
+
+```powershell
+pnpm contexttend -- work install-codex-hooks C:\path\to\repository --dry-run
+pnpm contexttend -- work install-codex-hooks C:\path\to\repository --apply
+```
+
+Then use `/hooks` in Codex to review and trust the installed definitions.
+ContextTend merges its handlers into an existing `.codex/hooks.json` rather
+than replacing other hooks. `SessionStart` contributes only a short active-work
+pointer (limited to 200 tokens); `PostToolUse`, `Interrupt`, and `SessionEnd`
+refresh `recovery.json` without model-visible output. `Stop` asks for at most
+one extra checkpoint pass and honors `stop_hook_active` to prevent loops.
+Project hooks require a Git repository so their command can resolve the root
+reliably. See the [official Codex hooks documentation](https://learn.chatgpt.com/docs/hooks)
+for lifecycle, trust, and configuration behavior.
+
+No hook reads `transcript_path`. The recovery file contains Git HEAD, changed
+paths, hashes, and a fingerprint—not prompts, file contents, reasoning, or
+session transcripts.
+
+### Claude and other coding agents
+
+Claude can use the same checkpoint without hooks:
+
+```powershell
+pnpm contexttend -- work install-claude-bridge C:\path\to\repository --dry-run
+pnpm contexttend -- work install-claude-bridge C:\path\to\repository --apply
+```
+
+This preserves existing `CLAUDE.md` content and adds one marker-bounded bridge
+to `AGENTS.md` and `.agents/skills/context-work/SKILL.md`. For another agent
+that does not read `AGENTS.md`, add the equivalent short instruction in its
+native rules file. A plain web chat with no repository, filesystem, Git, or
+command access cannot perform automatic recovery.
+
 ## CLI
 
 | Command | Purpose |
@@ -86,6 +181,9 @@ A successful run records onboarding and resumes the original task.
 | `update` | Preview/apply only safe managed-asset updates |
 | `migrate` | Preview/apply machine-state schema migrations |
 | `record` | Record a completed semantic workflow (normally called by Skills) |
+| `work start/status/checkpoint/recover/complete` | Manage one portable, bounded active-work checkpoint |
+| `work install-codex-hooks` | Preview/apply optional Codex lifecycle hooks |
+| `work install-claude-bridge` | Preview/apply a marker-bounded no-hooks Claude bridge |
 
 All commands support `--json` where structured automation is useful.
 `init`, `update`, and `migrate` never write unless `--apply` is supplied.
@@ -102,6 +200,9 @@ After initialization, current Codex discovers these under `.agents/skills/`:
   original request.
 - `$context-bootstrap` fills missing or placeholder native knowledge while
   preserving unknown product intent.
+- `$context-work` starts, checkpoints, resumes, blocks, or completes one
+  substantive work item. It reconciles semantic progress with actual
+  Git/filesystem and test evidence instead of trusting stale memory.
 - `$context-sync` performs the documentation-impact matrix after meaningful
   code changes. “No durable knowledge update required” is a valid result.
 - `$memory-audit` produces a read-only, evidence-backed report for stale,
@@ -122,6 +223,7 @@ maintenance layer, not a separate development methodology:
 
 ```text
 init once -> context-onboard once -> ordinary development
+          -> context-work only for substantive interruption-sensitive tasks
           -> context-sync after material changes
           -> memory-audit periodically
           -> harness-audit when the Codex harness changes
@@ -171,6 +273,12 @@ perform a context sync after material changes. You normally just ask Codex to
 implement the next task. Invoke `$context-sync` explicitly after a broad or
 important change when you want to make the documentation check unmistakable.
 
+When one active work item exists, “continue” or “resume” refers to that item.
+The agent checks `current.md` against the live working tree before acting.
+Additional user context has higher priority than the old checkpoint, while
+code, Git, canonical knowledge, and tests remain the evidence for what was
+actually completed.
+
 A material change includes product behaviour, architecture, a business rule,
 a public interface, security or reliability constraints, or a durable decision
 or plan. Typo fixes, formatting, and internal refactors that do not change a
@@ -199,6 +307,9 @@ Use the audit Skills at deliberate checkpoints rather than after every task:
 | `init` | Once per repository, and again in preview mode when adopting a newly added external knowledge system |
 | `update` | After upgrading ContextTend, to refresh only ContextTend-managed assets; preview before `--apply` |
 | `migrate` | Only when ContextTend reports that its machine-state schema needs migration |
+| `work status` | At resume, handoff, or whenever you want to know whether the checkpoint is stale |
+| `work recover` | Manually refresh machine-only recovery evidence when hooks are unavailable; Skills normally handle this |
+| `work start/checkpoint/complete` | Normally called by `$context-work`; manual use is supported for explicit lifecycle control |
 
 `update` does not update project knowledge, and `record` should not be used
 manually just to make `diff` clean. `record` accepts the current source hashes
@@ -209,6 +320,16 @@ unreviewed state can hide real documentation drift.
 Candidates under `.contexttend/candidates/` are unresolved durable knowledge,
 not disposable logs. Keep self-contained candidate documents under version
 control unless repository policy explicitly requires another durable owner.
+
+### What to keep in Git
+
+Commit `AGENTS.md`, `.agents/`, and `.contexttend/` so another account or
+coding agent receives the same governance and checkpoint protocol. The managed
+`.contexttend/work/.gitignore` excludes `recovery.json` because it is
+machine-local and frequently refreshed. `current.md` and state may be committed
+when a handoff must cross machines; review them under the repository's normal
+sensitive-data policy. Optional `.codex/hooks.json` and `CLAUDE.md` should be
+committed only when the team wants those integrations shared.
 
 ## Interoperability
 
@@ -241,5 +362,14 @@ the engineering boundary is detailed in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 - Implicit Skill selection is model-driven. The managed `AGENTS.md` trigger
   makes first-run onboarding expected, while `$context-onboard` remains the
   explicit fallback.
+- No system can guarantee a semantically fresh final checkpoint when a process,
+  machine, or quota stops abruptly. ContextTend guarantees detectable stale
+  state and deterministic recovery evidence; the next agent reconstructs
+  semantics from the repository.
+- Codex hooks are optional, require explicit installation and trust review, and
+  are currently installed only for Git repositories. The no-hooks resume path
+  remains fully functional.
+- Automatic “continue” requires a coding agent that reads a supported
+  repository instruction file and has filesystem/Git access.
 - npm publishing, plugin packaging, hosted services, and automatic framework
   migrations are outside the MVP.

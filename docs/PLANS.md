@@ -4,7 +4,7 @@ Authority: shared canonical roadmap.
 
 ## Active
 
-No active MVP implementation phase remains.
+No active durable implementation phase remains.
 
 ## Completed
 
@@ -23,5 +23,8 @@ No active MVP implementation phase remains.
 - Phase 12: lossless AGENTS migration protocol, automatic pre-onboarding anchor
   baseline, deterministic coverage CLI/gate, and regression coverage from a
   real oversized-AGENTS failure case.
+- Phase 13: one bounded active-work checkpoint, deterministic crash recovery,
+  optional low-context Codex hooks, no-hooks Claude bridge, schema v2
+  lifecycle, validation, tests, and self-dogfooding.
 
 Move completed work out of Active only after verification evidence exists.

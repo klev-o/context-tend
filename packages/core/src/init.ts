@@ -448,7 +448,7 @@ export async function buildInitPlan(
           root,
           assetPath,
           content,
-          "install current repo-scoped Skill asset",
+          "install current managed ContextTend asset",
           "system",
         ),
       );
@@ -579,7 +579,7 @@ export async function applyInitPlan(
     throw new Error("AGENTS.md managed block is missing after apply");
   }
   const state: State = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     contextTendVersion: CONTEXTTEND_VERSION,
     installedAt: previous?.installedAt ?? timestamp,
     updatedAt: timestamp,
@@ -593,6 +593,8 @@ export async function applyInitPlan(
     managedBlocks: {
       "AGENTS.md": { hash: blockHash, version: CONTEXTTEND_VERSION },
     },
+    activeWork: previous?.activeWork ?? null,
+    lastCompletedWork: previous?.lastCompletedWork ?? null,
   };
   await writeProjectFile(
     plan.root,

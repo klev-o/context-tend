@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { access, readFile, rm, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -90,6 +90,74 @@ describe("CLI process", () => {
     expect(invalid.code).toBe(1);
     expect(JSON.parse(invalid.stdout).findings).toEqual(
       expect.arrayContaining([expect.objectContaining({ code: "CT104" })]),
+    );
+  });
+
+  it("runs the portable work lifecycle and optional integrations end to end", async () => {
+    const root = await copyFixture("existing-agents");
+    expect((await runCli(["init", root, "--apply", "--json"])).code).toBe(0);
+
+    const started = await runCli([
+      "work",
+      "start",
+      root,
+      "--title",
+      "Resume across sessions",
+      "--objective",
+      "Verify the portable CLI lifecycle.",
+      "--json",
+    ]);
+    expect(started.code).toBe(0);
+    expect(JSON.parse(started.stdout)).toMatchObject({
+      active: true,
+      stale: false,
+      work: { title: "Resume across sessions" },
+    });
+
+    await writeFile(path.join(root, "feature.txt"), "changed\n", "utf8");
+    const stale = await runCli(["work", "status", root, "--json"]);
+    expect(stale.code).toBe(0);
+    const staleJson = JSON.parse(stale.stdout) as Record<string, unknown>;
+    expect(staleJson).toMatchObject({
+      active: true,
+      stale: true,
+    });
+    expect(staleJson).not.toHaveProperty("savedRecovery");
+    expect(stale.stdout).not.toContain('"hash"');
+
+    const checkpoint = await runCli(["work", "checkpoint", root, "--json"]);
+    expect(checkpoint.code).toBe(0);
+    expect(JSON.parse(checkpoint.stdout)).toMatchObject({ stale: false });
+    const completed = await runCli(["work", "complete", root, "--json"]);
+    expect(completed.code).toBe(0);
+    expect(JSON.parse(completed.stdout)).toMatchObject({
+      activeWork: null,
+      lastCompletedWork: { title: "Resume across sessions" },
+    });
+
+    const claude = await runCli([
+      "work",
+      "install-claude-bridge",
+      root,
+      "--apply",
+      "--json",
+    ]);
+    expect(claude.code).toBe(0);
+    expect(await readFile(path.join(root, "CLAUDE.md"), "utf8")).toContain(
+      ".contexttend/work/current.md",
+    );
+
+    await mkdir(path.join(root, ".git"));
+    const hooks = await runCli([
+      "work",
+      "install-codex-hooks",
+      root,
+      "--apply",
+      "--json",
+    ]);
+    expect(hooks.code).toBe(0);
+    expect(await readFile(path.join(root, ".codex", "hooks.json"), "utf8")).toContain(
+      ".contexttend/hooks/codex.mjs",
     );
   });
 });

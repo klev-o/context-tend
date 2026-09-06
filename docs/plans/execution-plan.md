@@ -1,6 +1,6 @@
 # ContextTend MVP execution plan
 
-Status legend: `[x]` pending, `[x]` active, `[x]` complete.
+Status markers: `[ ]` pending, `[~]` active, `[x]` complete.
 
 ## Architecture and constraints
 
@@ -143,3 +143,26 @@ Status legend: `[x]` pending, `[x]` active, `[x]` complete.
   before shortening user-authored content.
 - [x] Install the updated managed assets into this repository, run the
   onboarding path against it, and pass all development gates.
+
+## Phase 13 — interruption-safe active work
+
+- [x] Add schema v2 with one active-work pointer, checkpoint hashes, last
+  completed summary, and explicit v0/v1 migrations.
+- [x] Implement deterministic start/status/checkpoint/recover/complete APIs and
+  CLI with bounded document validation and live Git/filesystem fingerprints.
+- [x] Add `$context-work` with automatic continue/resume routing, evidence
+  precedence, meaningful checkpoint boundaries, and transcript-free limits.
+- [x] Add an optional self-contained Codex hook runtime and conflict-safe
+  `.codex/hooks.json` merge; cap SessionStart context and prevent Stop loops.
+- [x] Add a marker-bounded no-hooks Claude bridge without changing the portable
+  core protocol.
+- [x] Add unit, integration, runtime, process-level CLI, migration, and managed
+  asset tests.
+- [x] Document usage, architecture, product behavior, decision, limitations,
+  migration, and dogfooding; run sync and every final gate.
+
+Phase 13 completion evidence: state migration and managed self-update passed;
+dogfooding detected and fixed oversized default JSON recovery output; the
+official Skill validator passed; typecheck, lint, build, and 11 Vitest files /
+58 tests passed. Self-update also found and fixed stale generated installation
+metadata, now covered by CT119 and a lifecycle regression test.

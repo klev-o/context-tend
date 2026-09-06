@@ -6,7 +6,7 @@ import {
   AGENTS_COVERAGE_PATH,
   loadAgentCoverageSnapshot,
 } from "./agents-coverage.js";
-import { SYSTEM_ASSET_HASHES } from "./assets.js";
+import { CONTEXTTEND_META, SYSTEM_ASSET_HASHES } from "./assets.js";
 import type {
   Finding,
   ProjectSnapshot,
@@ -15,7 +15,7 @@ import type {
   ValidationResult,
 } from "./domain.js";
 import { sourcePaths } from "./domain.js";
-import { hashPath } from "./hashing.js";
+import { hashPath, sha256 } from "./hashing.js";
 import {
   AGENTS_MANAGED_BLOCK,
   countManagedBlocks,
@@ -34,6 +34,7 @@ import {
   loadRegistry,
   loadState,
 } from "./storage.js";
+import { getWorkStatus } from "./work.js";
 
 function fileFinding(error: unknown, code: string, relativePath: string): Finding {
   return {
@@ -263,6 +264,19 @@ async function validateManagedAssets(root: string, state: State | null): Promise
     }
   }
 
+  const metadataPath = "docs/_meta/contexttend.md";
+  const metadataHash = await hashPath(resolveRegistryPath(root, metadataPath));
+  if (metadataHash !== null && metadataHash !== sha256(CONTEXTTEND_META)) {
+    findings.push({
+      code: "CT119",
+      level: "warning",
+      severity: "P2",
+      message: "Generated ContextTend installation metadata is stale",
+      path: metadataPath,
+      remediation: "Run contexttend update --apply.",
+    });
+  }
+
   let agents = "";
   try {
     agents = await readFile(resolveRegistryPath(root, "AGENTS.md"), "utf8");
@@ -378,6 +392,46 @@ function deduplicate(findings: Finding[]): Finding[] {
   });
 }
 
+async function validateActiveWork(
+  root: string,
+  state: State | null,
+): Promise<Finding[]> {
+  const activeWork = state?.activeWork;
+  if (activeWork === null || activeWork === undefined) return [];
+  try {
+    const status = await getWorkStatus(root);
+    return status.reasons.map((reason) => {
+      const structural =
+        reason.includes("missing") ||
+        reason.includes("must contain") ||
+        reason.includes("missing required section") ||
+        reason.includes("maximum is") ||
+        reason.includes("another work item");
+      return {
+        code: structural ? "CT117" : "CT118",
+        level: structural ? "error" : "warning",
+        severity: structural ? "P1" : "P2",
+        message: structural
+          ? `Active work is structurally invalid: ${reason}`
+          : `Active work needs a semantic checkpoint: ${reason}`,
+        path: activeWork.path,
+        remediation: structural
+          ? "Repair the active-work files or complete a safe recovery before continuing."
+          : "Use $context-work checkpoint after reconciling current.md with repository evidence.",
+      } satisfies Finding;
+    });
+  } catch (error) {
+    return [{
+      code: "CT117",
+      level: "error",
+      severity: "P1",
+      message: `Cannot validate active work: ${error instanceof Error ? error.message : String(error)}`,
+      path: activeWork.path,
+      remediation: "Repair active-work state or run a supported state migration.",
+    }];
+  }
+}
+
 export async function validateProject(projectRoot: string): Promise<ValidationResult> {
   const snapshot = await scanProject(projectRoot);
   const findings: Finding[] = [];
@@ -418,6 +472,7 @@ export async function validateProject(projectRoot: string): Promise<ValidationRe
   }
   findings.push(...(await validateManagedAssets(snapshot.root, state)));
   findings.push(...(await validateAgentCoverageBaseline(snapshot.root, state)));
+  findings.push(...(await validateActiveWork(snapshot.root, state)));
 
   const unique = deduplicate(findings);
   const errors = unique.filter((finding) => finding.level === "error").length;

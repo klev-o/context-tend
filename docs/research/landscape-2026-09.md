@@ -166,13 +166,39 @@ Representative primary sources:
 - [AIDD harness](https://github.com/AIDD-Projects/harness)
 - [Harness Starter Kit](https://github.com/harnessworks/harness-starter-kit)
 
+### Codex hooks follow-up — 2026-09-05
+
+Current official Codex documentation now defines repository lifecycle hooks in
+`<repo>/.codex/hooks.json` or `config.toml`. Project hooks require explicit
+trust review, matching hooks from multiple layers accumulate rather than
+replace each other, and project commands should resolve paths from the Git root
+because a session can start in a subdirectory.
+
+The documented lifecycle includes `SessionStart`, `PostToolUse`, `Stop`,
+`Interrupt`, and `SessionEnd`. Empty successful command output adds no context;
+`SessionStart` may add developer context, and the documented default
+large-output threshold is approximately 2,500 tokens per hook message.
+OpenAI explicitly recommends keeping hook/plugin context concise because
+multiple sources accumulate. `Stop` exposes `stop_hook_active` so a continuation
+hook can avoid loops. The documented `transcript_path` format is not a stable
+hook interface.
+
+This changes the earlier blanket “no hooks” assumption, but not the product
+boundary. ContextTend uses hooks only as an optional, explicitly installed
+reliability adapter around a portable file/state protocol. Recovery hooks are
+silent; session-start output is capped at 200 tokens; no transcript is parsed.
+
+Primary source:
+
+- [Official OpenAI Codex hooks documentation](https://learn.chatgpt.com/docs/hooks)
+
 ## Capability matrix
 
 | Capability | Existing owner | ContextTend behavior |
 | --- | --- | --- |
 | Feature specs and plans | Spec Kit, OpenSpec, Agent OS, GSD | Discover and register |
 | Coding standards/rules distribution | Ruler, Rulesync, Agent OS | Discover; do not compile |
-| Session memory and retrieval | Serena and memory tools | Do not store or index |
+| Session memory and retrieval | Serena and memory tools | Do not store or index transcripts; keep only one bounded active handoff |
 | Agent runtime/orchestration | Codex harness, GSD, other harnesses | Do not implement |
 | Code semantic index | Serena and context engines | Do not implement |
 | Knowledge authority/ownership | Fragmented or implicit | Own registry model |
@@ -185,8 +211,9 @@ Representative primary sources:
 - no spec or task methodology;
 - no agent orchestration or Codex embedding;
 - no database, embeddings, semantic code index, or knowledge graph;
-- no transcript/session capture;
-- no MCP server, dashboard, daemon, watcher, hooks, deployment, or PR automation;
+- no transcript/session capture or growing activity log;
+- no MCP server, dashboard, daemon, background watcher, required hooks,
+  deployment, or PR automation;
 - no rules compiler or framework-file migration;
 - no automatic semantic rewrite of human- or external-owned knowledge.
 
@@ -212,6 +239,7 @@ Representative primary sources:
 | Adapter assumptions rot | Adapter validation and versioned research assumptions; no automatic external migrations |
 | Large repositories make scans slow | Bounded conventional discovery, ignored heavy directories, no deep code parsing |
 | Windows path behavior diverges | Store POSIX-style relative registry paths and convert only at filesystem boundaries |
+| Hooks increase token use or become the only recovery path | Keep hooks optional; silent recovery output, 200-token SessionStart cap, and portable no-hooks status/resume |
 
 ## Documented deviation from the original specification
 

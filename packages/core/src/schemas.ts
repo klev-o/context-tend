@@ -1,12 +1,14 @@
 import { z } from "zod";
 
 import {
+  ACTIVE_WORK_STATUSES,
   AUTHORITIES,
   OWNERS,
   type Config,
   type ExternalSourceRegistry,
   type Registry,
   type State,
+  type WorkRecovery,
 } from "./domain.js";
 
 const relativePathSchema = z
@@ -89,9 +91,31 @@ export const managedAssetStateSchema = z
   })
   .strict();
 
+export const activeWorkStateSchema = z
+  .object({
+    id: z.string().min(1).max(160),
+    title: z.string().min(1).max(240),
+    status: z.enum(ACTIVE_WORK_STATUSES),
+    path: relativePathSchema,
+    recoveryPath: relativePathSchema,
+    startedAt: z.string().datetime(),
+    checkpointedAt: z.string().datetime(),
+    checkpointHash: z.string().regex(/^[a-f0-9]{64}$/),
+    checkpointFingerprint: z.string().regex(/^[a-f0-9]{64}$/),
+  })
+  .strict();
+
+export const completedWorkStateSchema = z
+  .object({
+    id: z.string().min(1).max(160),
+    title: z.string().min(1).max(240),
+    completedAt: z.string().datetime(),
+  })
+  .strict();
+
 export const stateSchema = z
   .object({
-    schemaVersion: z.literal(1),
+    schemaVersion: z.literal(2),
     contextTendVersion: z.string().min(1),
     installedAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
@@ -103,6 +127,33 @@ export const stateSchema = z
     registeredHashes: z.record(z.string(), z.string().nullable()),
     managedAssets: z.record(z.string(), managedAssetStateSchema),
     managedBlocks: z.record(z.string(), managedAssetStateSchema),
+    activeWork: activeWorkStateSchema.nullable(),
+    lastCompletedWork: completedWorkStateSchema.nullable(),
+  })
+  .strict();
+
+export const workRecoverySchema = z
+  .object({
+    version: z.literal(1),
+    workId: z.string().min(1).max(160),
+    capturedAt: z.string().datetime(),
+    source: z.enum(["git", "filesystem"]),
+    gitHead: z.string().min(1).nullable(),
+    fingerprint: z.string().regex(/^[a-f0-9]{64}$/),
+    totalChangedFiles: z.number().int().nonnegative(),
+    truncated: z.boolean(),
+    changedFiles: z
+      .array(
+        z
+          .object({
+            path: relativePathSchema,
+            status: z.string().min(1).max(16),
+            hash: z.string().regex(/^[a-f0-9]{64}$/).nullable(),
+            previousPath: relativePathSchema.optional(),
+          })
+          .strict(),
+      )
+      .max(250),
   })
   .strict();
 
@@ -153,6 +204,10 @@ export function parseExternalSourceRegistry(
   value: unknown,
 ): ExternalSourceRegistry {
   return externalSourceRegistrySchema.parse(value);
+}
+
+export function parseWorkRecovery(value: unknown): WorkRecovery {
+  return workRecoverySchema.parse(value);
 }
 
 export function formatSchemaIssues(error: z.ZodError): string[] {

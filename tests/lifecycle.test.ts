@@ -2,6 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
+  CONTEXTTEND_META,
   SYSTEM_ASSET_CONTENTS,
   applyInitPlan,
   applyUpdatePlan,
@@ -72,6 +73,24 @@ describe("state lifecycle", () => {
     expect(await readFile(target, "utf8")).toBe(SYSTEM_ASSET_CONTENTS[relative]);
   });
 
+  it("regenerates stale installation metadata during update", async () => {
+    const root = await initialized();
+    const target = path.join(root, "docs", "_meta", "contexttend.md");
+    await writeFile(
+      target,
+      "<!-- contexttend:generated -->\n# ContextTend installation\n\nManaged by ContextTend 0.1.0.\n",
+      "utf8",
+    );
+    expect((await validateProject(root)).findings).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "CT119" })]),
+    );
+    await applyUpdatePlan(
+      await buildUpdatePlan(root),
+      new Date("2026-09-05T12:30:00.000Z"),
+    );
+    expect(await readFile(target, "utf8")).toBe(CONTEXTTEND_META);
+  });
+
   it("migrates legacy schema zero and rejects future schemas", () => {
     const result = migrateStateDocument(
       {
@@ -84,15 +103,42 @@ describe("state lifecycle", () => {
     expect(result).toMatchObject({
       changed: true,
       migratedFrom: 0,
-      migratedTo: 1,
+      migratedTo: 2,
       state: {
-        schemaVersion: 1,
+        schemaVersion: 2,
         installedAt: "2026-01-01T00:00:00.000Z",
+        activeWork: null,
       },
     });
     expect(() => migrateStateDocument({ schemaVersion: 99 }, now)).toThrow(
       /newer than supported/,
     );
+  });
+
+  it("migrates schema one without inventing active work", () => {
+    const result = migrateStateDocument(
+      {
+        schemaVersion: 1,
+        contextTendVersion: "0.1.0",
+        installedAt: "2026-01-01T00:00:00.000Z",
+        updatedAt: "2026-01-02T00:00:00.000Z",
+        lastOnboarding: null,
+        lastSync: null,
+        lastMemoryAudit: null,
+        lastHarnessAudit: null,
+        detectedAdapters: ["native"],
+        registeredHashes: {},
+        managedAssets: {},
+        managedBlocks: {},
+      },
+      now,
+    );
+    expect(result).toMatchObject({
+      changed: true,
+      migratedFrom: 1,
+      migratedTo: 2,
+      state: { schemaVersion: 2, activeWork: null, lastCompletedWork: null },
+    });
   });
 
   it("records semantic audit timestamps without changing project knowledge", async () => {
