@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/contexttend-logo.png" alt="ContextTend — living project knowledge governance for coding agents" width="900">
+</p>
+
 # ContextTend
 
 > Living project knowledge governance for coding agents.
@@ -35,6 +39,10 @@ The packages are not published by this repository. Run `pnpm install` and
 `pnpm build` once in the ContextTend checkout. Keep running `pnpm contexttend`
 from that checkout and pass the target repository as the command path; do not
 install ContextTend inside every target project.
+
+Human-facing commands start with the ContextTend ASCII wordmark. Automation
+interfaces stay undecorated: `--json`, `--quiet`, and `--version` never include
+the banner.
 
 ## First run
 

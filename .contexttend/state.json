@@ -2,24 +2,24 @@
   "schemaVersion": 2,
   "contextTendVersion": "0.2.0",
   "installedAt": "2026-09-04T20:24:18.007Z",
-  "updatedAt": "2026-09-05T21:10:30.900Z",
+  "updatedAt": "2026-09-06T01:33:30.446Z",
   "lastOnboarding": "2026-09-04T23:32:47.367Z",
-  "lastSync": "2026-09-05T21:09:00.871Z",
+  "lastSync": "2026-09-06T01:33:30.446Z",
   "lastMemoryAudit": "2026-09-04T20:28:39.171Z",
   "lastHarnessAudit": "2026-09-05T01:58:59.156Z",
   "detectedAdapters": [
     "native"
   ],
   "registeredHashes": {
-    "repository-readme": "4edd45fb4d16a1152a3c7643e85731293f7dec7b4496b8fb3e8a60097aa25291",
-    "architecture": "397abc6c11d20b8f2ffd17261ef3f87de1e26ea3b8120ac0e7ab27075db024ee",
-    "decisions": "bd050d18f894f5cb621346a8df8bca844c917ff5428bd8dff3d8acc51bda113f",
-    "implementation": "f72e064b1f70386c64da893afb208289dd72caf71d6344ba5c08fec6ed07cc7a",
-    "verification": "74bd391a25a8921f0be21e15c2b76835e3c877e4c135cd21164791d8940ab9d8",
+    "repository-readme": "677938e56cab3fac8f0b6bbd32e4c22acdf728c78d0e132de346226bb2651ccf",
+    "architecture": "34c13f75cc9e5f21e94be0075091689d4d26ac2520ccdddfd35e71dee573d543",
+    "decisions": "27e6ac055246774f4d22f10d67a2dcb1ede7dd614ea0df6b40ba8f9eae263b16",
+    "implementation": "33b7774f0840b13787d0dc93198e4bc52fc1a857fa186c02e943934926890b2f",
+    "verification": "4c39ba2eee4346acd1466fddf76c2b5706185cc1a8243975a74397839d2525eb",
     "goals": "6050b5f9bbff0a67850ae436e21d74ef34b7460aa6eddfdcba753c4dd95372a5",
-    "product": "25818fa0b5d1c09cfde53dff1dd47b727af49a954cb67d544d270abdf5332c1e",
+    "product": "e047092e5eec504a995071cb85122738ab35a5eaa6479af5c563866237de27a5",
     "roadmap": "081f09206ca8c50ed4a66285e5467603162460d8bcdac576ae9ca112070f3d24",
-    "implementation-context": "8cff0863c428953555b4634bbb85d47ba7696e1d403a4c1b4216f21969b5b188",
+    "implementation-context": "45ca7d78c66c8e86dc9d3dea96e3bc1e59d346da26808a80ccbfa7ddaf4fedac",
     "agent-instructions": "e8dc7eecdbaf2568591fd92ca62ec49a94ba6ce53676e9444258cb49159c9648",
     "contexttend-installation": "6d264f5a453fdba6a8a969a343fc6c9b040c939fa54fb5e03aa5b31ec980301c",
     "execution-plans": "100eddf91c57af0a6d0a9a47209ce88c90f40c6c0bfb60baa4936335f7cb68c9",
@@ -87,8 +87,8 @@
   },
   "activeWork": null,
   "lastCompletedWork": {
-    "id": "work-20260905T205331965z-6c71feff21",
-    "title": "Implement interruption-safe active work",
-    "completedAt": "2026-09-05T21:10:30.900Z"
+    "id": "work-20260906T012059072z-951256c13a",
+    "title": "Add ContextTend visual identity",
+    "completedAt": "2026-09-06T01:30:59.464Z"
   }
 }

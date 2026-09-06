@@ -41,6 +41,8 @@ import {
 } from "@contexttend/core";
 import { Command, InvalidArgumentError } from "commander";
 
+import { CONTEXTTEND_BANNER } from "./banner.js";
+
 interface OutputOptions {
   json?: boolean;
 }
@@ -55,6 +57,16 @@ function writeJson(value: unknown): void {
 
 function line(value = ""): void {
   process.stdout.write(`${value}\n`);
+}
+
+function showBanner(): void {
+  line(CONTEXTTEND_BANNER);
+  line("");
+}
+
+function decorativeOutputEnabled(): boolean {
+  const args = process.argv.slice(2);
+  return !args.includes("--json") && !args.includes("--quiet");
 }
 
 function formatFinding(finding: Finding): string {
@@ -125,8 +137,6 @@ function compactWorkStatus(result: WorkStatusResult): unknown {
 }
 
 function showPlan(title: string, plan: ChangePlan, applied: boolean): void {
-  line("ContextTend");
-  line("");
   line(title);
   line(`Repository: ${plan.root}`);
   line("");
@@ -189,7 +199,15 @@ program
   .name("contexttend")
   .description("Living project knowledge governance for coding agents")
   .version(CONTEXTTEND_VERSION)
-  .showHelpAfterError();
+  .showHelpAfterError()
+  .addHelpText("beforeAll", ({ error }) =>
+    error ? "" : CONTEXTTEND_BANNER + "\n\n",
+  )
+  .action(() => program.outputHelp());
+
+program.hook("preAction", (_thisCommand, actionCommand) => {
+  if (actionCommand !== program && decorativeOutputEnabled()) showBanner();
+});
 
 program
   .command("init")
@@ -242,8 +260,6 @@ program
     const canonical = sources.filter((source) => source.authority === "canonical").length;
     const historical = sources.filter((source) => source.authority === "historical").length;
     const detected = activeAdapterIds(status.adapters);
-    line("ContextTend");
-    line("");
     line(`Version          ${status.state.contextTendVersion}`);
     line(`Registry         ${status.validation.valid ? "healthy" : "needs attention"}`);
     line(`Adapters         ${detected.length > 0 ? detected.join(", ") : "native"}`);

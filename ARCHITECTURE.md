@@ -37,6 +37,8 @@ semantic meaning of an active handoff snapshot. The CLI never invokes an LLM.
   active-work, recovery, and optional integration APIs.
 - `packages/cli` presents the core through Commander. Mutating lifecycle
   commands are non-interactive and preview-only unless `--apply` is explicit.
+  A shared presentation hook adds the dependency-free ASCII banner only to
+  human output; JSON, quiet, version, and error channels stay undecorated.
 - `.agents/skills` is installed per repository by `init`, matching current
   Codex repo-Skill discovery.
 - `.contexttend/hooks/codex.mjs` is a dependency-free managed runtime.

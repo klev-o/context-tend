@@ -28,6 +28,10 @@ systems, proposes a typed Knowledge Registry, creates only missing native
 sources, validates infrastructure, and tracks stable hashes. Preview is the
 default; writes require explicit `--apply`.
 
+Interactive CLI output carries a recognizable ContextTend ASCII wordmark,
+while machine-readable JSON, quiet recovery, version output, and errors remain
+free of decorative text so scripts can consume them safely.
+
 Repo-scoped Codex Skills then perform semantic bootstrap, documentation-impact
 sync, memory audit, and fresh harness audit. Uncertain observations become
 candidates, not fabricated canonical truth.

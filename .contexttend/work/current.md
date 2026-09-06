@@ -1,83 +1,90 @@
-# Current work: Implement interruption-safe active work
+# Current work: Add ContextTend visual identity
 
 <!-- contexttend:work:start -->
-Work ID: work-20260905T205331965z-6c71feff21
+Work ID: work-20260906T012059072z-951256c13a
 Status: completed
-Started: 2026-09-05T20:53:31.965Z
-Checkpointed: 2026-09-05T21:10:30.900Z
+Started: 2026-09-06T01:20:59.072Z
+Checkpointed: 2026-09-06T01:30:59.464Z
 <!-- contexttend:work:end -->
 
 This is a compact handoff snapshot, not a transcript or activity log.
 
 ## Objective
 
-Implement portable ContextTend checkpoints, deterministic recovery, optional Codex hooks, a no-hooks Claude bridge, documentation, tests, and dogfooding.
+Add a project logo to the README and a readable ContextTend ASCII banner to human-facing CLI output, with tests and documentation kept current.
 
 ## Definition of done
 
-- One active task can start, checkpoint, recover, resume, block, and complete.
-- A fresh session can reconcile the checkpoint with Git/filesystem evidence.
-- Codex hooks are optional, silent for recovery, bounded for context, and loop-safe.
-- Claude can use the same state through a marker-bounded no-hooks bridge.
-- Documentation, migration, validation, tests, and self-dogfooding are complete.
+- A polished ContextTend logo asset is stored inside the repository and rendered at the very beginning of README.md.
+- Human-facing CLI commands display a compact, legible ASCII ContextTend wordmark before their normal output.
+- Machine-readable JSON, quiet hook recovery, and error output remain free of decorative banner text.
+- Existing CLI behavior is covered by regression tests and all project gates pass.
+- Durable documentation and ContextTend registry state are synchronized.
 
 ## Constraints
 
-- Deterministic code owns state, hashes, Git/filesystem facts, and hook merging.
-- Skills own semantic summaries and contradiction resolution.
-- Never store transcripts, chain-of-thought, full diffs, secrets, or growing logs.
-- Keep `current.md` below 8 KiB; do not activate it for trivial work.
-- Preserve existing hooks, CLAUDE.md content, and user repository changes.
+- Preserve user changes and repository-specific instructions.
+- Keep the CLI banner dependency-free and readable in Windows, Linux, WSL, narrow terminals, and plain logs.
+- Keep the logo as a repository-owned raster asset; do not depend on an external image URL.
+- Do not alter command semantics or contaminate JSON output.
 
 ## Decisions
 
-- Schema v2 stores one `activeWork` pointer plus the last completed summary.
-- `current.md` is the replace-in-place semantic handoff; `recovery.json` is ignored
-  by Git and contains deterministic hashes/paths only.
-- Hooks are installed only by an explicit dry-run/apply command and require Codex
-  trust review; the portable CLI/Skill workflow remains functional without them.
-- Stop requests at most one extra checkpoint pass by honoring `stop_hook_active`.
+- Use one restrained logo-brand image with the exact wordmark "ContextTend" and a visual motif of connected context threads being cultivated/organized.
+- Implement the terminal wordmark as a deterministic ASCII constant rather than adding a banner dependency.
+- Route the banner through the existing human-output path and suppress it for JSON/quiet modes.
 
 ## Completed
 
-- Implemented core lifecycle, recovery fingerprints, schema validation, and v1→v2 migration.
-- Added CLI commands for status/start/checkpoint/recover/complete.
-- Added `$context-work`, the portable guide, managed hook runtime, Codex hook
-  merger, Claude bridge, AGENTS routing, validation findings, and status output.
-- Added unit, integration, hook-runtime, and process-level CLI coverage.
-- Migrated and updated this repository; managed validation passed cleanly.
-- Updated goals, product, architecture, decision 0005, research, README,
-  implementation context, roadmap, execution plan, and dogfooding report.
-- Completed the documentation impact matrix and recorded the new sync baseline.
+- Active work checkpoint created.
+- Confirmed the repository is clean and no prior active work exists.
+- Located README placement and all current CLI title output sites.
+- Generated and inspected the exact ContextTend wordmark with a connected knowledge/sprout/compass motif.
+- Saved the repository-owned raster asset at docs/assets/contexttend-logo.png and placed it first in README.md.
+- Added a dependency-free ASCII banner through Commander preAction/help lifecycle handling.
+- Kept --json, --quiet, and --version free of decorative output.
+- Added regression coverage for help, human output, JSON parsing, and quiet recovery.
+- Updated product, architecture, reference, and implementation-context sources through context-sync.
+- Completed the full verification suite successfully.
+- Recorded the synchronized Knowledge Registry baseline after clean validation.
 
 ## In progress
 
-- Record the final fresh checkpoint, validate it, and close active work.
+- Close active work after final freshness checks.
 
 ## Next steps
 
-1. Run `contexttend work checkpoint`.
-2. Confirm deterministic validation and registry diff are clean.
-3. Run `contexttend work complete` and report the finished MVP increment.
+1. Record this final semantic checkpoint.
+2. Confirm validation and registry diff are clean.
+3. Complete active work.
 
 ## Changed files
 
-- Core: domain/schema/migration/work/recovery/integration/assets/validation/status.
-- CLI: active-work and integration commands.
-- Managed assets: AGENTS routing, `context-work`, guide, hook runtime.
-- Tests: work lifecycle, integrations, Skills, init, migration, and CLI E2E.
-- Package metadata: version 0.2.0.
+- .contexttend/work/current.md
+- README.md
+- ARCHITECTURE.md
+- docs/PRODUCT.md
+- docs/context/README.md
+- docs/assets/contexttend-logo.png
+- packages/cli/src/banner.ts
+- packages/cli/src/index.ts
+- tests/cli.e2e.test.ts
 
 ## Verification
 
-- Targeted lifecycle tests: 10/10 passed.
-- Targeted Skill/integration/lifecycle tests: 28/28 passed.
-- Full suite after Windows/Unicode hardening: 11 files / 58 tests passed.
-- Final typecheck, lint, test, and production build gates passed.
-- Typecheck and production builds passed at each implementation boundary.
-- Self migration v1→v2 and managed update validation: 0 errors, 0 warnings.
-- Self-update found and fixed stale generated installation metadata (CT119).
-- `contexttend record sync` accepted the updated registered-source baseline.
+- Initial `work status --json`: no previous active work.
+- Initial `git status --short`: clean.
+- ImageGen output inspected: exact wordmark, high contrast, wide README-safe composition.
+- `pnpm build`: passed.
+- `pnpm typecheck`: passed.
+- Targeted CLI test: 3/3 passed before the quiet-mode assertion was added.
+- Manual CLI checks: banner present in status/help and absent from valid JSON output.
+- Full `pnpm test`: 11 files / 59 tests passed.
+- Full `pnpm typecheck`, `pnpm lint`, and production build: passed.
+- `git diff --check`: passed (Windows line-ending notices only).
+- Context-sync impact: product behavior/public interface/reliability yes; architecture summary and implementation context updated; business/security/roadmap/accepted limitation no.
+- Post-sync validation: healthy with 0 errors and 0 warnings.
+- `contexttend record sync`: completed at 2026-09-06T01:30:08.824Z.
 
 ## Blockers
 
@@ -85,6 +92,5 @@ Implement portable ContextTend checkpoints, deterministic recovery, optional Cod
 
 ## Resume instructions
 
-Run `contexttend work status . --json` and finish the three exact next steps
-above. Do not redo implementation or documentation unless current validation
-or repository evidence contradicts this checkpoint.
+Read this file, run `contexttend work status`, inspect Git status/diff and
+relevant tests, then continue from the first unfinished verified step.

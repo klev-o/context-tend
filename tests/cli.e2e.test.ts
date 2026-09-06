@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 
 import { afterEach, describe, expect, it } from "vitest";
 
+import { CONTEXTTEND_BANNER } from "../packages/cli/src/banner.js";
 import { cleanupProjects, copyFixture } from "./helpers.js";
 
 const workspaceRoot = fileURLToPath(new URL("..", import.meta.url));
@@ -41,6 +42,28 @@ function runCli(args: string[]): Promise<ProcessResult> {
 afterEach(cleanupProjects);
 
 describe("CLI process", () => {
+  it("shows the banner for human output without contaminating JSON", async () => {
+    const help = await runCli(["--help"]);
+    expect(help).toMatchObject({ code: 0, stderr: "" });
+    expect(help.stdout.startsWith(CONTEXTTEND_BANNER)).toBe(true);
+
+    const root = await copyFixture("existing-agents");
+    expect((await runCli(["init", root, "--apply", "--json"])).code).toBe(0);
+
+    const human = await runCli(["status", root]);
+    expect(human).toMatchObject({ code: 0, stderr: "" });
+    expect(human.stdout.startsWith(CONTEXTTEND_BANNER)).toBe(true);
+
+    const machine = await runCli(["status", root, "--json"]);
+    expect(machine).toMatchObject({ code: 0, stderr: "" });
+    expect(machine.stdout).not.toContain(CONTEXTTEND_BANNER);
+    expect(JSON.parse(machine.stdout)).toMatchObject({ root });
+
+    const invalid = await runCli(["unknown-command"]);
+    expect(invalid.code).toBe(1);
+    expect(invalid.stderr).not.toContain(CONTEXTTEND_BANNER);
+  });
+
   it("previews without writes, applies idempotently, validates and diffs", async () => {
     const root = await copyFixture("existing-agents");
     const agentsPath = path.join(root, "AGENTS.md");
@@ -124,6 +147,14 @@ describe("CLI process", () => {
     });
     expect(staleJson).not.toHaveProperty("savedRecovery");
     expect(stale.stdout).not.toContain('"hash"');
+
+    const quietRecovery = await runCli([
+      "work",
+      "recover",
+      root,
+      "--quiet",
+    ]);
+    expect(quietRecovery).toMatchObject({ code: 0, stdout: "", stderr: "" });
 
     const checkpoint = await runCli(["work", "checkpoint", root, "--json"]);
     expect(checkpoint.code).toBe(0);

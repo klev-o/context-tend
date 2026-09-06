@@ -9,7 +9,9 @@ or restate human product intent.
 - `packages/core`: strict TypeScript domain, Zod schemas, scanner, adapters,
   plan/apply lifecycle, validation, hashing, diff, update, migrations, record,
   active-work/recovery, and agent-integration APIs.
-- `packages/cli`: Commander presentation over core with human and JSON output.
+- `packages/cli`: Commander presentation over core with a dependency-free
+  ASCII wordmark for human output and undecorated JSON/quiet/version channels.
+- `docs/assets/contexttend-logo.png`: repository-owned README brand asset.
 - `tests/fixtures`: existing-repository shapes for native/generic, Spec Kit,
   OpenSpec, Agent OS, GSD, conflicts, and local customization.
 - `.agents/skills`: six installed semantic workflows; their source templates
