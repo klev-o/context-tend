@@ -2,24 +2,24 @@
   "schemaVersion": 2,
   "contextTendVersion": "0.2.0",
   "installedAt": "2026-09-04T20:24:18.007Z",
-  "updatedAt": "2026-09-06T01:33:30.446Z",
+  "updatedAt": "2026-09-06T02:22:15.485Z",
   "lastOnboarding": "2026-09-04T23:32:47.367Z",
-  "lastSync": "2026-09-06T01:33:30.446Z",
+  "lastSync": "2026-09-06T02:21:15.607Z",
   "lastMemoryAudit": "2026-09-04T20:28:39.171Z",
   "lastHarnessAudit": "2026-09-05T01:58:59.156Z",
   "detectedAdapters": [
     "native"
   ],
   "registeredHashes": {
-    "repository-readme": "677938e56cab3fac8f0b6bbd32e4c22acdf728c78d0e132de346226bb2651ccf",
-    "architecture": "34c13f75cc9e5f21e94be0075091689d4d26ac2520ccdddfd35e71dee573d543",
-    "decisions": "27e6ac055246774f4d22f10d67a2dcb1ede7dd614ea0df6b40ba8f9eae263b16",
-    "implementation": "33b7774f0840b13787d0dc93198e4bc52fc1a857fa186c02e943934926890b2f",
-    "verification": "4c39ba2eee4346acd1466fddf76c2b5706185cc1a8243975a74397839d2525eb",
-    "goals": "6050b5f9bbff0a67850ae436e21d74ef34b7460aa6eddfdcba753c4dd95372a5",
-    "product": "e047092e5eec504a995071cb85122738ab35a5eaa6479af5c563866237de27a5",
-    "roadmap": "081f09206ca8c50ed4a66285e5467603162460d8bcdac576ae9ca112070f3d24",
-    "implementation-context": "45ca7d78c66c8e86dc9d3dea96e3bc1e59d346da26808a80ccbfa7ddaf4fedac",
+    "repository-readme": "8871cefda8cc108db98827a46f2e113f3fbe79cb81542210f5200b1738f0c73c",
+    "architecture": "d25ecaad7c56ff773200fcf11eb27ade9a797367bfb482113f891fac72638f67",
+    "decisions": "30790b8c83d9039407df732efd08214d1a1eb754f717b0d673c52754fe684f95",
+    "implementation": "6a484255a54003416cec8e341c4349c6029810c7b8905f644713859668454f7f",
+    "verification": "74af198f1ba9e9290bc1ca41b81997275f02393bc3c3cec02de09fe816a1eff4",
+    "goals": "048a8b153520013269136e9a92d46fe6ce592fdf87545cd8706ecc65f564cac0",
+    "product": "048e8ba0d24946b8ce208d2bc99a7dc98f48257239c47d809bf7175a44e684e9",
+    "roadmap": "8187540113e0eb43688fa48dc3eeaa6955cc13d9814e27e398c1e160cf151bd9",
+    "implementation-context": "d820c69d1e6cba8aab39b752001a97fb98dbf66821b27f64cd7f4f2214e2d258",
     "agent-instructions": "e8dc7eecdbaf2568591fd92ca62ec49a94ba6ce53676e9444258cb49159c9648",
     "contexttend-installation": "6d264f5a453fdba6a8a969a343fc6c9b040c939fa54fb5e03aa5b31ec980301c",
     "execution-plans": "100eddf91c57af0a6d0a9a47209ce88c90f40c6c0bfb60baa4936335f7cb68c9",
@@ -87,8 +87,8 @@
   },
   "activeWork": null,
   "lastCompletedWork": {
-    "id": "work-20260906T012059072z-951256c13a",
-    "title": "Add ContextTend visual identity",
-    "completedAt": "2026-09-06T01:30:59.464Z"
+    "id": "work-20260906T020857984z-4577685d76",
+    "title": "Prepare the first npm release",
+    "completedAt": "2026-09-06T02:22:15.485Z"
   }
 }

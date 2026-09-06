@@ -18,6 +18,8 @@ Authority: human-owned canonical product intent.
 - Let substantive interrupted work resume from a clean Codex, Claude, or other
   repository-capable agent session using one compact checkpoint plus verified
   working-tree evidence.
+- Distribute the CLI as one installable public `contexttend` npm package that
+  works through pnpm without exposing internal workspace packaging.
 
 ## Non-goals
 
@@ -46,5 +48,7 @@ or task trackers.
 - A substantive task interrupted after repository mutation is reported stale,
   resumes after Git/filesystem and test reconciliation, and cannot be marked
   complete until a fresh bounded checkpoint is recorded.
+- The packed npm artifact installs in a clean project and runs the complete
+  init/validate lifecycle through `pnpm contexttend`.
 - The project remains local-first, portable, inspectable, and small enough to
   understand without operating infrastructure.

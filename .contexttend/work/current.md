@@ -1,90 +1,110 @@
-# Current work: Add ContextTend visual identity
+# Current work: Prepare the first npm release
 
 <!-- contexttend:work:start -->
-Work ID: work-20260906T012059072z-951256c13a
+Work ID: work-20260906T020857984z-4577685d76
 Status: completed
-Started: 2026-09-06T01:20:59.072Z
-Checkpointed: 2026-09-06T01:30:59.464Z
+Started: 2026-09-06T02:08:57.984Z
+Checkpointed: 2026-09-06T02:22:15.485Z
 <!-- contexttend:work:end -->
 
 This is a compact handoff snapshot, not a transcript or activity log.
 
 ## Objective
 
-Add a project logo to the README and a readable ContextTend ASCII banner to human-facing CLI output, with tests and documentation kept current.
+Make ContextTend publish-ready as one public npm CLI package, add MIT licensing and package metadata, verify tarball installation, and document the exact account and release workflow without publishing.
 
 ## Definition of done
 
-- A polished ContextTend logo asset is stored inside the repository and rendered at the very beginning of README.md.
-- Human-facing CLI commands display a compact, legible ASCII ContextTend wordmark before their normal output.
-- Machine-readable JSON, quiet hook recovery, and error output remain free of decorative banner text.
-- Existing CLI behavior is covered by regression tests and all project gates pass.
-- Durable documentation and ContextTend registry state are synchronized.
+- Exactly one public npm package, `contexttend`, is publishable from packages/cli; root and core stay private.
+- The CLI production artifact bundles the internal core and has no runtime dependency on unpublished `@contexttend/core`; Commander, YAML, and Zod remain declared external runtime dependencies.
+- MIT license, npm metadata, package README, repository links, Node engine, files allowlist, and prepack build are complete.
+- `pnpm publish --dry-run` and tarball inspection show only intended distributable files.
+- A clean temporary project can install the packed tarball and run `pnpm contexttend --help`, init dry-run/apply, and validate.
+- Project tests, typecheck, lint, build, ContextTend validation, registry sync, and release documentation pass.
+- No npm publish, dist-tag, GitHub release, tag, or push is performed.
 
 ## Constraints
 
 - Preserve user changes and repository-specific instructions.
-- Keep the CLI banner dependency-free and readable in Windows, Linux, WSL, narrow terminals, and plain logs.
-- Keep the logo as a repository-owned raster asset; do not depend on an external image URL.
-- Do not alter command semantics or contaminate JSON output.
+- Use the user-approved MIT license and GitHub repository https://github.com/klev-o/context-tend.
+- Avoid requiring an npm organization or public core package for the first release.
+- Keep package consumers independent of workspace-only dependency resolution.
+- Never create, print, or commit npm credentials or tokens.
 
 ## Decisions
 
-- Use one restrained logo-brand image with the exact wordmark "ContextTend" and a visual motif of connected context threads being cultivated/organized.
-- Implement the terminal wordmark as a deterministic ASCII constant rather than adding a banner dependency.
-- Route the banner through the existing human-output path and suppress it for JSON/quiet modes.
+- Publish unscoped `contexttend` from an ordinary npm account; npm organization ownership is unnecessary for unscoped packages.
+- Keep `@contexttend/core` private and move it to a CLI development dependency while tsup `noExternal` bundles it.
+- Keep Commander, YAML, and Zod external as declared runtime dependencies; bundle only the private workspace core.
+- Root workspace remains private to prevent accidental publication.
 
 ## Completed
 
 - Active work checkpoint created.
-- Confirmed the repository is clean and no prior active work exists.
-- Located README placement and all current CLI title output sites.
-- Generated and inspected the exact ContextTend wordmark with a connected knowledge/sprout/compass motif.
-- Saved the repository-owned raster asset at docs/assets/contexttend-logo.png and placed it first in README.md.
-- Added a dependency-free ASCII banner through Commander preAction/help lifecycle handling.
-- Kept --json, --quiet, and --version free of decorative output.
-- Added regression coverage for help, human output, JSON parsing, and quiet recovery.
-- Updated product, architecture, reference, and implementation-context sources through context-sync.
-- Completed the full verification suite successfully.
+- Confirmed clean Git state, `master`, and origin git@github.com:klev-o/context-tend.git.
+- Confirmed npm registry currently returns 404 for unscoped `contexttend`.
+- Confirmed current tarballs omit README/LICENSE and current CLI imports unpublished `@contexttend/core`.
+- Verified from current npm documentation that an individual account may publish an unscoped public package.
+- Verified tsup `noExternal` takes precedence over automatic dependency externalization.
+- Initial all-in-one dependency bundle failed on YAML CommonJS dynamic require; corrected the boundary to externalize YAML/Zod while preserving a single public package.
+- Added root and package MIT license text with copyright holder klev-o.
+- Made only packages/cli publishable and added complete npm metadata, files allowlist, Node engine, package README, and prepack build.
+- Added a tsup configuration that bundles private @contexttend/core while externalizing declared Commander/YAML/Zod runtime dependencies.
+- Added release packaging regression tests and an owner-facing npm release guide.
+- `pnpm publish --dry-run --no-git-checks` reached the registry target and skipped publication as expected.
+- Packed the actual contexttend-0.2.0.tgz and verified its five intended files and transformed manifest.
+- Installed the tarball in a clean temporary project; `pnpm contexttend --help`, init dry-run/apply, and validate all passed.
+- Removed the isolated temporary pack/smoke directories after verification.
+- Confirmed the authenticated npm account is the ordinary user `klev-o`; no organization is required for unscoped `contexttend`.
+- Completed context-sync updates to goals, product, architecture, ADR 0006, implementation context, and roadmap.
 - Recorded the synchronized Knowledge Registry baseline after clean validation.
 
 ## In progress
 
-- Close active work after final freshness checks.
+- Run final freshness/diff checks and close active work.
 
 ## Next steps
 
 1. Record this final semantic checkpoint.
-2. Confirm validation and registry diff are clean.
-3. Complete active work.
+2. Confirm validation, registry diff, and work freshness are clean.
+3. Complete active work without publishing and report the owner's remaining 2FA/account action.
 
 ## Changed files
 
 - .contexttend/work/current.md
+- LICENSE
 - README.md
 - ARCHITECTURE.md
+- docs/GOALS.md
+- docs/PLANS.md
 - docs/PRODUCT.md
 - docs/context/README.md
-- docs/assets/contexttend-logo.png
-- packages/cli/src/banner.ts
-- packages/cli/src/index.ts
-- tests/cli.e2e.test.ts
+- docs/decisions/0006-single-public-npm-package.md
+- docs/releasing-npm.md
+- package.json
+- packages/cli/LICENSE
+- packages/cli/README.md
+- packages/cli/package.json
+- packages/cli/tsup.config.ts
+- pnpm-lock.yaml
+- tests/package-release.test.ts
 
 ## Verification
 
-- Initial `work status --json`: no previous active work.
-- Initial `git status --short`: clean.
-- ImageGen output inspected: exact wordmark, high contrast, wide README-safe composition.
-- `pnpm build`: passed.
-- `pnpm typecheck`: passed.
-- Targeted CLI test: 3/3 passed before the quiet-mode assertion was added.
-- Manual CLI checks: banner present in status/help and absent from valid JSON output.
-- Full `pnpm test`: 11 files / 59 tests passed.
-- Full `pnpm typecheck`, `pnpm lint`, and production build: passed.
+- Initial active work status: none.
+- Initial Git status: clean.
+- Registry name check: `contexttend` returned npm E404 on 2026-09-06; final eligibility remains registry-controlled at publish time.
+- Corrected bundle size: 165.55 KB; no @contexttend/core runtime import.
+- Targeted package/CLI tests: 5/5 passed.
+- Publish dry-run: passed; no registry mutation.
+- Tarball contents: LICENSE, README.md, package.json, dist/index.js, dist/index.d.ts only.
+- Clean tarball consumer smoke test: short pnpm command and full init/validate lifecycle passed.
+- Full `pnpm test`: 12 files / 61 tests passed.
+- Full typecheck, lint, and build: passed.
 - `git diff --check`: passed (Windows line-ending notices only).
-- Context-sync impact: product behavior/public interface/reliability yes; architecture summary and implementation context updated; business/security/roadmap/accepted limitation no.
+- `npm whoami`: klev-o; `npm profile get` reports 2FA disabled, so the owner must enable it before the first publish.
 - Post-sync validation: healthy with 0 errors and 0 warnings.
-- `contexttend record sync`: completed at 2026-09-06T01:30:08.824Z.
+- `contexttend record sync`: completed at 2026-09-06T02:21:15.607Z.
 
 ## Blockers
 

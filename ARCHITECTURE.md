@@ -48,6 +48,19 @@ semantic meaning of an active handoff snapshot. The CLI never invokes an LLM.
 The dependency direction is `cli -> core`. Project repositories do not need a
 runtime service, database, daemon, or network connection.
 
+## Distribution boundary
+
+The repository remains a private pnpm workspace, while `packages/cli` is the
+single public npm package named `contexttend`. Its tsup build bundles the
+private `@contexttend/core` workspace package. Commander, YAML, and Zod remain
+declared external runtime dependencies so their supported ESM/CommonJS entry
+behavior is preserved. Consumers never resolve the workspace-only core.
+
+The npm tarball is allowlisted to CLI `dist/`, package README, LICENSE, and
+package metadata. Release regression tests verify the public/private package
+boundary, MIT text, Node shebang, repository metadata, external imports, and
+absence of an `@contexttend/core` runtime import.
+
 ## Registry model
 
 `.contexttend/registry.yaml` maps stable source identifiers to:

@@ -11,6 +11,8 @@ or restate human product intent.
   active-work/recovery, and agent-integration APIs.
 - `packages/cli`: Commander presentation over core with a dependency-free
   ASCII wordmark for human output and undecorated JSON/quiet/version channels.
+  It is the only public npm package; its build bundles the private core and
+  leaves Commander/YAML/Zod as declared runtime dependencies.
 - `docs/assets/contexttend-logo.png`: repository-owned README brand asset.
 - `tests/fixtures`: existing-repository shapes for native/generic, Spec Kit,
   OpenSpec, Agent OS, GSD, conflicts, and local customization.
@@ -26,3 +28,5 @@ or restate human product intent.
 
 The test command builds both packages before running Vitest so process-level
 CLI tests exercise the same dist artifacts used by local execution.
+`tests/package-release.test.ts` additionally guards the npm manifest, MIT
+license, public/private boundary, package README, shebang, and bundle imports.

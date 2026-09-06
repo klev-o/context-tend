@@ -24,10 +24,26 @@ before creating anything.
   recovery and optional low-context Codex hooks;
 - local-only operation with no telemetry, model call, database, or daemon.
 
-## Requirements and local setup
+## Installation
 
 - Node.js 20 or newer
 - pnpm 11
+
+Run directly from npm without adding a dependency to the target repository:
+
+```powershell
+pnpm dlx contexttend --help
+pnpm dlx contexttend init C:\path\to\repository --dry-run
+```
+
+Or install it in a project to use the short `pnpm contexttend` form:
+
+```powershell
+pnpm add --save-dev contexttend
+pnpm contexttend --help
+```
+
+For development from this repository:
 
 ```powershell
 pnpm install
@@ -35,10 +51,9 @@ pnpm build
 pnpm contexttend --help
 ```
 
-The packages are not published by this repository. Run `pnpm install` and
-`pnpm build` once in the ContextTend checkout. Keep running `pnpm contexttend`
-from that checkout and pass the target repository as the command path; do not
-install ContextTend inside every target project.
+Before the first npm release, only the development form is available. The
+complete owner-only release procedure is documented in
+[`docs/releasing-npm.md`](docs/releasing-npm.md).
 
 Human-facing commands start with the ContextTend ASCII wordmark. Automation
 interfaces stay undecorated: `--json`, `--quiet`, and `--version` never include

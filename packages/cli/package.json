@@ -1,19 +1,54 @@
 {
   "name": "contexttend",
   "version": "0.2.0",
-  "private": true,
+  "description": "Living project knowledge governance for coding agents",
   "type": "module",
   "bin": {
     "contexttend": "./dist/index.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "coding-agents",
+    "codex",
+    "agents-md",
+    "project-memory",
+    "knowledge-registry",
+    "cli"
+  ],
+  "license": "MIT",
+  "author": "klev-o",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/klev-o/context-tend.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/klev-o/context-tend#readme",
+  "bugs": {
+    "url": "https://github.com/klev-o/context-tend/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean",
+    "build": "tsup",
+    "prepack": "pnpm build",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@contexttend/core": "workspace:*",
-    "commander": "14.0.3"
+    "commander": "14.0.3",
+    "yaml": "2.9.0",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@contexttend/core": "workspace:*"
   }
 }

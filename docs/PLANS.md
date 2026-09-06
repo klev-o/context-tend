@@ -26,5 +26,8 @@ No active durable implementation phase remains.
 - Phase 13: one bounded active-work checkpoint, deterministic crash recovery,
   optional low-context Codex hooks, no-hooks Claude bridge, schema v2
   lifecycle, validation, tests, and self-dogfooding.
+- Phase 14: single public npm CLI packaging, bundled private core, MIT license,
+  release metadata/docs, publish dry-run, tarball regression, and clean-project
+  installation smoke test.
 
 Move completed work out of Active only after verification evidence exists.

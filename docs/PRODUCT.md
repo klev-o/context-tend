@@ -28,6 +28,11 @@ systems, proposes a typed Knowledge Registry, creates only missing native
 sources, validates infrastructure, and tracks stable hashes. Preview is the
 default; writes require explicit `--apply`.
 
+The public distribution is one unscoped npm package named `contexttend`.
+Users may run it ephemerally with `pnpm dlx contexttend`, install it locally
+and use `pnpm contexttend`, or install it globally and invoke `contexttend`.
+The internal core is not a separately required public package.
+
 Interactive CLI output carries a recognizable ContextTend ASCII wordmark,
 while machine-readable JSON, quiet recovery, version output, and errors remain
 free of decorative text so scripts can consume them safely.
