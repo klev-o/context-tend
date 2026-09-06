@@ -6,6 +6,8 @@
 
 > Living project knowledge governance for coding agents.
 
+[Русская версия](README.ru.md)
+
 ContextTend tells Codex and other coding agents where durable project truth
 lives, how authoritative it is, who may change it, and whether its local
 infrastructure has drifted. It adopts existing documentation and workflows
