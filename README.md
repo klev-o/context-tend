@@ -516,5 +516,12 @@ the engineering boundary is detailed in [`ARCHITECTURE.md`](ARCHITECTURE.md).
   remains fully functional.
 - Automatic “continue” requires a coding agent that reads a supported
   repository instruction file and has filesystem/Git access.
-- npm publishing, plugin packaging, hosted services, and automatic framework
-  migrations are outside the MVP.
+- Plugin packaging, hosted services, and automatic framework migrations are
+  outside the MVP.
+
+## npm releases
+
+[Release instructions](docs/RELEASING.md) describe the one-time npm trusted
+publisher setup and tag-based GitHub Actions workflow. A stable tag matching
+the package version triggers checks, packaging, and publication to `latest`.
+Branch pushes do not publish; version numbers are updated before tagging.

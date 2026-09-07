@@ -33,3 +33,8 @@ The test command builds both packages before running Vitest so process-level
 CLI tests exercise the same dist artifacts used by local execution.
 `tests/package-release.test.ts` additionally guards the npm manifest, MIT
 license, public/private boundary, package README, shebang, and bundle imports.
+
+The [npm release workflow](../../.github/workflows/publish.yml) checks stable
+tag/version agreement, runs the development gates, packs the CLI with pnpm,
+and publishes via npm OIDC. [Release setup](../RELEASING.md) documents the
+required npm trusted publisher and maintainer steps.

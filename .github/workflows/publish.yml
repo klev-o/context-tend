@@ -1,0 +1,58 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: npm-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Verify release version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFileSync } from 'node:fs';
+          const read = (path) => JSON.parse(readFileSync(path, 'utf8'));
+          const cli = read('packages/cli/package.json');
+          assert.match(cli.version, /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/, 'Only stable releases are supported');
+          assert.equal(process.env.RELEASE_TAG, `v${cli.version}`, 'Tag must match CLI version');
+          assert.equal(read('package.json').version, cli.version, 'Workspace version differs');
+          assert.equal(read('packages/core/package.json').version, cli.version, 'Core version differs');
+          const domain = readFileSync('packages/core/src/domain.ts', 'utf8');
+          assert.equal(domain.match(/CONTEXTTEND_VERSION = "([^"]+)"/)?.[1], cli.version, 'Runtime version differs');
+          NODE
+      - name: Install package managers
+        run: |
+          npm install --global npm@11
+          npm install --global "$(node -p 'require("./package.json").packageManager')"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: Pack CLI with bundled core
+        working-directory: packages/cli
+        run: pnpm pack --out "$RUNNER_TEMP/contexttend.tgz"
+      - name: Inspect publication
+        run: npm publish "$RUNNER_TEMP/contexttend.tgz" --dry-run --access public
+      - name: Publish using npm trusted publishing
+        run: npm publish "$RUNNER_TEMP/contexttend.tgz" --access public --tag latest
