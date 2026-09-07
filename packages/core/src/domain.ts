@@ -1,4 +1,4 @@
-export const CONTEXTTEND_VERSION = "0.3.0";
+export const CONTEXTTEND_VERSION = "0.3.1";
 export const SCHEMA_VERSION = 2;
 
 export const BUILT_IN_ROLES = [

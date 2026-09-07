@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -159,5 +160,64 @@ describe("state lifecycle", () => {
     });
     expect(state.lastOnboarding).toBe("2026-09-04T14:00:00.000Z");
     expect(await readFile(path.join(root, "docs", "PRODUCT.md"), "utf8")).toBe(before);
+  });
+});
+
+describe("managed asset newline compatibility", () => {
+  const relative = ".agents/skills/context-sync/SKILL.md";
+  const hash = (s: string) => createHash("sha256").update(s).digest("hex");
+
+  it("validates all current CRLF assets without drift warnings", async () => {
+    const root = await initialized();
+    for (const [name, content] of Object.entries(SYSTEM_ASSET_CONTENTS)) {
+      await writeFile(path.join(root, name), content.replaceAll("\n", "\r\n"));
+    }
+    await writeFile(path.join(root, "docs/_meta/contexttend.md"), CONTEXTTEND_META.replaceAll("\n", "\r\n"));
+    expect((await validateProject(root)).findings.filter(f => ["CT109", "CT119"].includes(f.code))).toEqual([]);
+    const plan = await buildUpdatePlan(root);
+    expect(plan.findings.filter(f => f.code === "CT301")).toEqual([]);
+    await applyUpdatePlan(plan, now);
+    expect((await buildUpdatePlan(root)).changes.filter(c => c.path === relative)[0]?.kind).toBe("skip");
+  });
+
+  it.each(["lf", "crlf"])("upgrades old %s baselines after Git newline conversion", async (baseline) => {
+    const root = await initialized();
+    const old = "# Previous shipped template\n\nOld managed instructions.\n";
+    const previous = baseline === "lf" ? old : old.replaceAll("\n", "\r\n");
+    const current = baseline === "lf" ? old.replaceAll("\n", "\r\n") : old;
+    const statePath = path.join(root, ".contexttend/state.json");
+    const state = JSON.parse(await readFile(statePath, "utf8"));
+    state.managedAssets[relative] = { hash: hash(previous), version: "0.2.0" };
+    await writeFile(statePath, JSON.stringify(state));
+    await writeFile(path.join(root, relative), current);
+    const plan = await buildUpdatePlan(root);
+    expect(plan.findings.filter(f => f.code === "CT301")).toEqual([]);
+    await applyUpdatePlan(plan, now);
+    expect(await readFile(path.join(root, relative), "utf8")).toBe(SYSTEM_ASSET_CONTENTS[relative]);
+    const updated = JSON.parse(await readFile(statePath, "utf8"));
+    expect(updated.managedAssets[relative].hash).toBe(hash(SYSTEM_ASSET_CONTENTS[relative]!));
+  });
+
+  it("preserves substantive edits and their recorded baseline with CRLF", async () => {
+    const root = await initialized();
+    const statePath = path.join(root, ".contexttend/state.json");
+    const before = JSON.parse(await readFile(statePath, "utf8")).managedAssets[relative];
+    const edited = (SYSTEM_ASSET_CONTENTS[relative] + "\nKeep this local rule.\n").replaceAll("\n", "\r\n");
+    await writeFile(path.join(root, relative), edited);
+    const plan = await buildUpdatePlan(root);
+    expect(plan.findings.some(f => f.code === "CT301" && f.path === relative)).toBe(true);
+    await applyUpdatePlan(plan, now);
+    expect(await readFile(path.join(root, relative), "utf8")).toBe(edited);
+    expect(JSON.parse(await readFile(statePath, "utf8")).managedAssets[relative]).toEqual(before);
+    expect((await validateProject(root)).findings.some(f => f.code === "CT109" && f.path === relative)).toBe(true);
+  });
+
+  it("rejects even newline-only changes made after preview", async () => {
+    const root = await initialized();
+    const target = path.join(root, relative);
+    await writeFile(target, SYSTEM_ASSET_CONTENTS[relative]!.replaceAll("\n", "\r\n"));
+    const plan = await buildUpdatePlan(root);
+    await writeFile(target, SYSTEM_ASSET_CONTENTS[relative]!);
+    await expect(applyUpdatePlan(plan, now)).rejects.toThrow("changed after planning");
   });
 });

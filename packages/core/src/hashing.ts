@@ -77,3 +77,12 @@ export async function hashPath(targetPath: string): Promise<string | null> {
   }
   return sha256(`other\0${stats.mode}\0${stats.size}`);
 }
+
+// Managed text only: never use this for write-conflict or repository hashes.
+export function matchesManagedTextHash(content: string, expected: string | undefined): boolean {
+  if (expected === undefined) return false;
+  const lf = content.replaceAll("\r\n", "\n");
+  return [content, lf, lf.replaceAll("\n", "\r\n")].some(
+    (variant) => sha256(variant) === expected,
+  );
+}

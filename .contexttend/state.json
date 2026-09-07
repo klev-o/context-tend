@@ -1,27 +1,27 @@
 {
   "schemaVersion": 2,
-  "contextTendVersion": "0.3.0",
+  "contextTendVersion": "0.3.1",
   "installedAt": "2026-09-04T20:24:18.007Z",
-  "updatedAt": "2026-09-07T23:22:06.405Z",
+  "updatedAt": "2026-09-07T23:57:59.592Z",
   "lastOnboarding": "2026-09-04T23:32:47.367Z",
-  "lastSync": "2026-09-07T23:22:05.515Z",
+  "lastSync": "2026-09-07T23:57:58.976Z",
   "lastMemoryAudit": "2026-09-04T20:28:39.171Z",
   "lastHarnessAudit": "2026-09-07T23:08:15.235Z",
   "detectedAdapters": [
     "native"
   ],
   "registeredHashes": {
-    "repository-readme": "a99d25b258e7a6bca0b76373dc3d7b82298ed905b264ac3f666882f4edb3468d",
+    "repository-readme": "b0a87e7038c8a48f63e6ddf831997907944799ad75b4c87160d1e18eaf1a2d00",
     "architecture": "96ae78954f0b7eed3abe659318cc4e417dd5a8c471b2774b1756eed194a70153",
     "decisions": "846883abab9e26868d3eeb9286de43fdbd55aec90981f72de117c467b876bc0e",
-    "implementation": "b4c98ab23d676e87c65341cf9544a33e7cffc5004309124461110eb957609afb",
-    "verification": "722df2354fc59f4b2bacc7994aca664526308c3de79cb6f441c313d350b9948a",
+    "implementation": "2bda34e0eba9f2b3471592caad3dacf4341d3e0659671a9cb25c4fcf2d606c06",
+    "verification": "dd874640f0fc7c9ca9ae63d426bfb28164121e7de82cd7b2a827f5a23e6efdb5",
     "goals": "048a8b153520013269136e9a92d46fe6ce592fdf87545cd8706ecc65f564cac0",
     "product": "048e8ba0d24946b8ce208d2bc99a7dc98f48257239c47d809bf7175a44e684e9",
     "roadmap": "51de4d4b0e86afbce4058945a44ce559bf38a3708bce13665180fb9065416802",
-    "implementation-context": "772f5e4b579713d37218ee98e2a133a79da8df825e440ae25eb4e5b8a1080ac4",
+    "implementation-context": "149dd705f6b62c7107e8ca5a988d9cd6cd3af9d3c67570c52fae1cbe29e6f758",
     "agent-instructions": "ae4771fe8064d517dd5b02b30497ba6bddd831836bc41575b5d56b6e132634f3",
-    "contexttend-installation": "a10b1acae82b763897de27f3d72edc6f1f899f97d94430e9b96d9a1dd86fc112",
+    "contexttend-installation": "599536bd621a8357afaaed22859bdbb59b83e6dec90ef9c8d05311704ecceb5e",
     "execution-plans": "100eddf91c57af0a6d0a9a47209ce88c90f40c6c0bfb60baa4936335f7cb68c9",
     "research": "636a1f4d0e3fff53fd8b19f6682a9dc0353f7f675ebc9b96399383e00eba5b4e",
     "requirements": "e95eefd9cfd896a9f3e065acecc0df845a75e1bdcb2f0f5222b58c05e799da6c"
@@ -29,71 +29,71 @@
   "managedAssets": {
     ".contexttend/guides/agent-governance.md": {
       "hash": "a3a2b8e8bf7caf5b9809017be345b7be350e45dd6ff1ad66f0d80d0ecba0bcb1",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     ".contexttend/guides/requirements.md": {
       "hash": "911ce48de1794d3e3ae6cb26a71895673a017d34a9103ab4bf28ddd9a2276027",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     ".contexttend/guides/work-continuity.md": {
       "hash": "be1174f6392d73a51665b3a4ad07bbe84f284f346e81375177c7fd3d2dadceaf",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     ".contexttend/audits/.gitkeep": {
       "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     ".contexttend/candidates/.gitkeep": {
       "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     ".contexttend/work/.gitignore": {
       "hash": "c660d9f41eeb592b47bcb9cdfb39e847210021bf0b173c1a8a0c6fd1424a582d",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     ".contexttend/hooks/codex.mjs": {
       "hash": "e591cee138b01ac892f38e98ec6e37219c23dff5844ff9cdc936f779b225fd68",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     ".agents/skills/context-onboard/SKILL.md": {
       "hash": "55fdb2e583d75cb833bb8be175bbebc851d3e5251a6a464cc5473d6cc86314e6",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     ".agents/skills/context-onboard/references/agents-migration.md": {
       "hash": "f01d24efab83706d74d76de87e2ee1247da5c4a7f375db471acfee71c0f1d823",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     ".agents/skills/context-bootstrap/SKILL.md": {
       "hash": "110a9eba788b827c3f175be917987035d5ed5cd88779670c822dbc55af981f2a",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     ".agents/skills/context-sync/SKILL.md": {
       "hash": "177b8ed6bd0f6599e3d280f390270a40eebaf10d58ae88dd2cce682796ccaa30",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     ".agents/skills/memory-audit/SKILL.md": {
       "hash": "b8b3ec8c0164694888028e637bc51e0a3e6459102dda952902b21289fbfc8155",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     ".agents/skills/harness-audit/SKILL.md": {
       "hash": "77f4228b0b47be810ba433886e2486f745682206199b3b6e794e159af052f4a2",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     ".agents/skills/context-work/SKILL.md": {
       "hash": "a76d0150be9774dd0881f683d6fd57dd9aab0749ed994577964f6726b4f11f17",
-      "version": "0.3.0"
+      "version": "0.3.1"
     }
   },
   "managedBlocks": {
     "AGENTS.md": {
       "hash": "1e417a5554f52b3832bf268e4d2e390f95f47241a73d439a24e246ffe71546b1",
-      "version": "0.3.0"
+      "version": "0.3.1"
     }
   },
   "activeWork": null,
   "lastCompletedWork": {
-    "id": "work-20260907T231822386z-d680123453",
-    "title": "GitHub Actions npm release",
-    "completedAt": "2026-09-07T23:22:06.405Z"
+    "id": "work-20260907T235454689z-c889d34292",
+    "title": "CRLF-safe managed updates",
+    "completedAt": "2026-09-07T23:57:59.592Z"
   }
 }

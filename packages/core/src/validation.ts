@@ -14,7 +14,7 @@ import type {
   ValidationResult,
 } from "./domain.js";
 import { sourcePaths } from "./domain.js";
-import { hashPath, sha256 } from "./hashing.js";
+import { hashPath, matchesManagedTextHash, sha256 } from "./hashing.js";
 import {
   AGENTS_MANAGED_BLOCK,
   countManagedBlocks,
@@ -191,7 +191,9 @@ async function validateManagedAssets(root: string, state: State | null): Promise
         path: assetPath,
         remediation: "Run contexttend update --apply.",
       });
-    } else if (actualHash !== expectedHash) {
+    } else if (!matchesManagedTextHash(
+      await readFile(resolveRegistryPath(root, assetPath), "utf8"), expectedHash,
+    )) {
       findings.push({
         code: "CT109",
         level: "warning",
@@ -212,7 +214,9 @@ async function validateManagedAssets(root: string, state: State | null): Promise
 
   const metadataPath = "docs/_meta/contexttend.md";
   const metadataHash = await hashPath(resolveRegistryPath(root, metadataPath));
-  if (metadataHash !== null && metadataHash !== sha256(CONTEXTTEND_META)) {
+  if (metadataHash !== null && !matchesManagedTextHash(
+    await readFile(resolveRegistryPath(root, metadataPath), "utf8"), sha256(CONTEXTTEND_META),
+  )) {
     findings.push({
       code: "CT119",
       level: "warning",

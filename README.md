@@ -525,3 +525,10 @@ the engineering boundary is detailed in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 publisher setup and tag-based GitHub Actions workflow. A stable tag matching
 the package version triggers checks, packaging, and publication to `latest`.
 Branch pushes do not publish; version numbers are updated before tagging.
+
+Managed asset checks accept LF/CRLF line-ending differences, including prior
+installation hashes written with either convention. Content edits still
+produce CT301/CT109. Update writes the shipped template; it does not change
+Git configuration. Missing or inconsistent old hashes cannot prove that an
+older template is unmodified and still require review. Changes after preview
+are checked byte-for-byte, including line endings.

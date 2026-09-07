@@ -25,14 +25,14 @@ pnpm to resolve workspace metadata and publishes the same tarball with npm.
 
 1. Update versions together in root `package.json`, `packages/cli/package.json`,
    `packages/core/package.json`, and `CONTEXTTEND_VERSION` in
-   `packages/core/src/domain.ts`. Version `0.3.0` is already prepared.
+   `packages/core/src/domain.ts`. Version `0.3.1` is already prepared.
 2. Commit the release changes, including the workflow for the first release.
 3. Configure npm trust before pushing the tag, then run from the repository:
 
    ```sh
    git push origin master
-   git tag -a v0.3.0 -m "ContextTend 0.3.0"
-   git push origin v0.3.0
+   git tag -a v0.3.1 -m "ContextTend 0.3.1"
+   git push origin v0.3.1
    ```
 
 4. Check the Publish to npm run in GitHub Actions, then verify:

@@ -13,7 +13,7 @@ import {
   type PlannedChange,
   type State,
 } from "./domain.js";
-import { hashPath, sha256 } from "./hashing.js";
+import { hashPath, matchesManagedTextHash, sha256 } from "./hashing.js";
 import {
   AGENTS_MANAGED_BLOCK,
   managedBlockHash,
@@ -66,12 +66,11 @@ export async function buildUpdatePlan(projectRoot: string): Promise<ChangePlan> 
 
   for (const [assetPath, desired] of Object.entries(SYSTEM_ASSET_CONTENTS)) {
     const current = await readOptional(resolveRegistryPath(snapshot.root, assetPath));
-    const actualHash = current === null ? null : sha256(current);
     const recordedHash = state.managedAssets[assetPath]?.hash;
     if (
       current !== null &&
-      actualHash !== SYSTEM_ASSET_HASHES[assetPath] &&
-      actualHash !== recordedHash
+      !matchesManagedTextHash(current, SYSTEM_ASSET_HASHES[assetPath]) &&
+      !matchesManagedTextHash(current, recordedHash)
     ) {
       changes.push({
         path: assetPath,

@@ -38,3 +38,8 @@ The [npm release workflow](../../.github/workflows/publish.yml) checks stable
 tag/version agreement, runs the development gates, packs the CLI with pnpm,
 and publishes via npm OIDC. [Release setup](../RELEASING.md) documents the
 required npm trusted publisher and maintainer steps.
+
+Managed asset update/validation compares raw, LF and CRLF text variants against
+known hashes. Legacy state remains compatible without schema migration; no
+whitespace or content changes are ignored. Filesystem conflict hashes remain
+exact. Regression cases live in `tests/lifecycle.test.ts`.

@@ -1,21 +1,21 @@
-# Current work: GitHub Actions npm release
+# Current work: CRLF-safe managed updates
 
 <!-- contexttend:work:start -->
-Work ID: work-20260907T231822386z-d680123453
+Work ID: work-20260907T235454689z-c889d34292
 Status: completed
-Started: 2026-09-07T23:18:22.386Z
-Checkpointed: 2026-09-07T23:22:06.405Z
+Started: 2026-09-07T23:54:54.689Z
+Checkpointed: 2026-09-07T23:57:59.592Z
 <!-- contexttend:work:end -->
 
 This is a compact handoff snapshot, not a transcript or activity log.
 
 ## Objective
 
-Add a verified tag-triggered npm publication workflow and setup documentation
+Accept newline-only managed asset differences while preserving edits and exact write conflict checks
 
 ## Definition of done
 
-- Tag-only workflow verifies matching stable versions, runs checks, packs CLI and publishes via npm OIDC; bilingual setup instructions and local verification complete.
+- LF/CRLF legacy baselines update safely; validation accepts newline-only differences; real edits and concurrent changes remain protected; regression tests and docs pass.
 
 ## Constraints
 
@@ -23,30 +23,29 @@ Add a verified tag-triggered npm publication workflow and setup documentation
 
 ## Decisions
 
-- Use npm trusted publishing on GitHub-hosted runners; publish only the CLI tarball packed by pnpm.
+- Normalize only managed-content comparisons. Keep filesystem/concurrency hashes exact; do not guess missing or corrupted legacy baselines.
 
 ## Completed
 
-- Added tag-triggered OIDC workflow, stable version guard, frozen install, checks and tarball publication.
-- Added release setup guide and English/Russian README instructions; corrected obsolete npm limitation.
+- Implemented managed LF/CRLF comparison against current and legacy hashes.
+- Added five lifecycle regressions; documented behavior and prepared version 0.3.1.
 
 ## In progress
 
-- Implementation and local verification complete.
+- Implementation complete; final documentation validation.
 
 ## Next steps
 
-1. Maintainer configures npm trusted publisher, commits workflow and pushes release tag.
+1. Commit and publish 0.3.1 only when requested.
 
 ## Changed files
 
-- .github/workflows/publish.yml; docs/RELEASING.md; README.md; README.ru.md; docs/context/README.md.
+- hashing.ts, update.ts, validation.ts, lifecycle.test.ts, version manifests, READMEs and release/context documentation.
 
 ## Verification
 
-- YAML parsed; correct tag accepted and incorrect/prerelease tags rejected.
-- Typecheck, build and 97 tests passed. pnpm pack and npm publish --dry-run passed.
-- Actual GitHub OIDC publication remains untested until the first tag run.
+- Typecheck and build passed; 102 tests passed.
+- Actual content changes preserve the prior baseline; newline changes after preview still block apply.
 
 ## Blockers
 
