@@ -14,10 +14,12 @@ external specification system.
   Git HEAD, changed paths, hashes, and a repository fingerprint. It never
   contains file contents, model reasoning, prompts, or transcripts.
 
-When evidence conflicts, use this order: the current user instruction, actual
-repository/tests, canonical registered knowledge, `current.md`, then
-`recovery.json`. A checkpoint describes intent and progress but cannot
-override observable repository facts.
+Use [agent-governance.md](agent-governance.md) for instruction precedence and
+ownership. The current user request sets intent; canonical requirements govern
+what should be built. Actual repository/tests establish implementation facts.
+A mismatch is drift, never permission to promote code into requirements.
+Reconcile current.md and recovery.json against both; checkpoints are handoff
+evidence, not product authority.
 
 ## Lifecycle
 

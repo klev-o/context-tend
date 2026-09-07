@@ -28,7 +28,9 @@ this Skill owns semantic understanding and checkpoint content.
 4. For `resume`, run `contexttend work status . --json`. Inspect
    `git status --short`, unstaged and staged diffs, relevant files/tests, and
    canonical or adapter-owned plans. Treat the current user message as the
-   latest intent. Reconcile stale checkpoint claims with repository evidence,
+   latest intent. Follow the governance guide: requirements govern obligations,
+   repository/tests establish facts, and checkpoints override neither.
+   Reconcile stale checkpoint claims with repository evidence,
    checkpoint the corrected snapshot, and continue from the first unfinished
    verified step. Ask only when a real product ambiguity or unsafe conflict
    cannot be resolved.

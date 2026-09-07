@@ -1,3 +1,4 @@
+import { conventionalRequirements } from "./requirements.js";
 import type { KnowledgeAdapter, KnowledgeSource } from "../domain.js";
 import {
   filesUnder,
@@ -45,9 +46,10 @@ export const genericAdapter: KnowledgeAdapter = {
     addFirst(sources, project, "security", ["SECURITY.md", "docs/SECURITY.md", "docs/security.md"], "security", "canonical", "human", "Security policy and assumptions");
     addFirst(sources, project, "operations", ["docs/runbooks", "runbooks", "docs/operations"], "operations", "canonical", "shared", "Operational runbooks");
 
-    const requirementPath = firstExistingPath(project, ["docs/requirements", "requirements", "specs"]);
-    if (requirementPath !== null && !snapshotHasPath(project, ".specify") && !snapshotHasPath(project, "openspec")) {
-      sources["requirements"] = source(requirementPath, "requirements", "canonical", "human", "generic", "Repository requirements");
+    for (const [index, paths] of conventionalRequirements(project).entries()) {
+      const id = index === 0 ? "requirements" : "requirements-" + (index + 1);
+      sources[id] = source(paths.length === 1 ? paths[0]! : paths,
+        "requirements", "canonical", "human", "generic", "Repository requirements");
     }
 
     const implementationPaths = ["src", "packages", "app", "lib"].filter((candidate) =>

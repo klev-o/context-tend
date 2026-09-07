@@ -1,94 +1,99 @@
 {
   "schemaVersion": 2,
-  "contextTendVersion": "0.2.0",
+  "contextTendVersion": "0.3.0",
   "installedAt": "2026-09-04T20:24:18.007Z",
-  "updatedAt": "2026-09-06T02:22:15.485Z",
+  "updatedAt": "2026-09-07T23:09:33.762Z",
   "lastOnboarding": "2026-09-04T23:32:47.367Z",
-  "lastSync": "2026-09-06T02:21:15.607Z",
+  "lastSync": "2026-09-07T23:09:33.163Z",
   "lastMemoryAudit": "2026-09-04T20:28:39.171Z",
-  "lastHarnessAudit": "2026-09-05T01:58:59.156Z",
+  "lastHarnessAudit": "2026-09-07T23:08:15.235Z",
   "detectedAdapters": [
     "native"
   ],
   "registeredHashes": {
-    "repository-readme": "8871cefda8cc108db98827a46f2e113f3fbe79cb81542210f5200b1738f0c73c",
-    "architecture": "d25ecaad7c56ff773200fcf11eb27ade9a797367bfb482113f891fac72638f67",
-    "decisions": "30790b8c83d9039407df732efd08214d1a1eb754f717b0d673c52754fe684f95",
-    "implementation": "6a484255a54003416cec8e341c4349c6029810c7b8905f644713859668454f7f",
-    "verification": "74af198f1ba9e9290bc1ca41b81997275f02393bc3c3cec02de09fe816a1eff4",
+    "repository-readme": "32ca8aa621964bf7cd6df8fd1569bf844ea0fc564502ce8cea225ac244c69416",
+    "architecture": "96ae78954f0b7eed3abe659318cc4e417dd5a8c471b2774b1756eed194a70153",
+    "decisions": "846883abab9e26868d3eeb9286de43fdbd55aec90981f72de117c467b876bc0e",
+    "implementation": "b4c98ab23d676e87c65341cf9544a33e7cffc5004309124461110eb957609afb",
+    "verification": "722df2354fc59f4b2bacc7994aca664526308c3de79cb6f441c313d350b9948a",
     "goals": "048a8b153520013269136e9a92d46fe6ce592fdf87545cd8706ecc65f564cac0",
     "product": "048e8ba0d24946b8ce208d2bc99a7dc98f48257239c47d809bf7175a44e684e9",
-    "roadmap": "8187540113e0eb43688fa48dc3eeaa6955cc13d9814e27e398c1e160cf151bd9",
-    "implementation-context": "d820c69d1e6cba8aab39b752001a97fb98dbf66821b27f64cd7f4f2214e2d258",
-    "agent-instructions": "e8dc7eecdbaf2568591fd92ca62ec49a94ba6ce53676e9444258cb49159c9648",
-    "contexttend-installation": "6d264f5a453fdba6a8a969a343fc6c9b040c939fa54fb5e03aa5b31ec980301c",
+    "roadmap": "51de4d4b0e86afbce4058945a44ce559bf38a3708bce13665180fb9065416802",
+    "implementation-context": "b953037a25ac5a2d4ec54d9c370dbaf8062cb4600492be4924e86030506a67e6",
+    "agent-instructions": "ae4771fe8064d517dd5b02b30497ba6bddd831836bc41575b5d56b6e132634f3",
+    "contexttend-installation": "a10b1acae82b763897de27f3d72edc6f1f899f97d94430e9b96d9a1dd86fc112",
     "execution-plans": "100eddf91c57af0a6d0a9a47209ce88c90f40c6c0bfb60baa4936335f7cb68c9",
-    "research": "636a1f4d0e3fff53fd8b19f6682a9dc0353f7f675ebc9b96399383e00eba5b4e"
+    "research": "636a1f4d0e3fff53fd8b19f6682a9dc0353f7f675ebc9b96399383e00eba5b4e",
+    "requirements": "e95eefd9cfd896a9f3e065acecc0df845a75e1bdcb2f0f5222b58c05e799da6c"
   },
   "managedAssets": {
     ".contexttend/guides/agent-governance.md": {
-      "hash": "3f67d01a1c16c9c605c92bac317dfc334b638275599e82bcd77c2ab4057b3965",
-      "version": "0.2.0"
+      "hash": "a3a2b8e8bf7caf5b9809017be345b7be350e45dd6ff1ad66f0d80d0ecba0bcb1",
+      "version": "0.3.0"
+    },
+    ".contexttend/guides/requirements.md": {
+      "hash": "911ce48de1794d3e3ae6cb26a71895673a017d34a9103ab4bf28ddd9a2276027",
+      "version": "0.3.0"
+    },
+    ".contexttend/guides/work-continuity.md": {
+      "hash": "be1174f6392d73a51665b3a4ad07bbe84f284f346e81375177c7fd3d2dadceaf",
+      "version": "0.3.0"
     },
     ".contexttend/audits/.gitkeep": {
       "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "version": "0.2.0"
+      "version": "0.3.0"
     },
     ".contexttend/candidates/.gitkeep": {
       "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "version": "0.2.0"
-    },
-    ".agents/skills/context-bootstrap/SKILL.md": {
-      "hash": "214d4a02466481be1e1293e07bbd0f333f7a9baa7cb1ca18da202ab0ab6ea365",
-      "version": "0.2.0"
-    },
-    ".agents/skills/context-sync/SKILL.md": {
-      "hash": "abc33f1aa67bd1b7f0535545f398968d2ec28089ccf70fb0d0fb5cac81b653db",
-      "version": "0.2.0"
-    },
-    ".agents/skills/memory-audit/SKILL.md": {
-      "hash": "510d98a8ce2e25530d1bdbab97568cd912905365f51c39ee06ae7b4dc7730e3f",
-      "version": "0.2.0"
-    },
-    ".agents/skills/harness-audit/SKILL.md": {
-      "hash": "111f436b40a70c0cf911603711b95cf856ce46b60b3e135d40e4946210ca42c6",
-      "version": "0.2.0"
-    },
-    ".agents/skills/context-onboard/SKILL.md": {
-      "hash": "c5700ee1243fce86ae24ababe347602f27709ee7e1586e9898d679db72b793f1",
-      "version": "0.2.0"
-    },
-    ".agents/skills/context-onboard/references/agents-migration.md": {
-      "hash": "f01d24efab83706d74d76de87e2ee1247da5c4a7f375db471acfee71c0f1d823",
-      "version": "0.2.0"
-    },
-    ".contexttend/guides/work-continuity.md": {
-      "hash": "2e0726fb978e94c54787e9832b5825a0a6938283550e096a72436ebf9e05cd84",
-      "version": "0.2.0"
+      "version": "0.3.0"
     },
     ".contexttend/work/.gitignore": {
       "hash": "c660d9f41eeb592b47bcb9cdfb39e847210021bf0b173c1a8a0c6fd1424a582d",
-      "version": "0.2.0"
+      "version": "0.3.0"
     },
     ".contexttend/hooks/codex.mjs": {
       "hash": "e591cee138b01ac892f38e98ec6e37219c23dff5844ff9cdc936f779b225fd68",
-      "version": "0.2.0"
+      "version": "0.3.0"
+    },
+    ".agents/skills/context-onboard/SKILL.md": {
+      "hash": "55fdb2e583d75cb833bb8be175bbebc851d3e5251a6a464cc5473d6cc86314e6",
+      "version": "0.3.0"
+    },
+    ".agents/skills/context-onboard/references/agents-migration.md": {
+      "hash": "f01d24efab83706d74d76de87e2ee1247da5c4a7f375db471acfee71c0f1d823",
+      "version": "0.3.0"
+    },
+    ".agents/skills/context-bootstrap/SKILL.md": {
+      "hash": "110a9eba788b827c3f175be917987035d5ed5cd88779670c822dbc55af981f2a",
+      "version": "0.3.0"
+    },
+    ".agents/skills/context-sync/SKILL.md": {
+      "hash": "177b8ed6bd0f6599e3d280f390270a40eebaf10d58ae88dd2cce682796ccaa30",
+      "version": "0.3.0"
+    },
+    ".agents/skills/memory-audit/SKILL.md": {
+      "hash": "b8b3ec8c0164694888028e637bc51e0a3e6459102dda952902b21289fbfc8155",
+      "version": "0.3.0"
+    },
+    ".agents/skills/harness-audit/SKILL.md": {
+      "hash": "77f4228b0b47be810ba433886e2486f745682206199b3b6e794e159af052f4a2",
+      "version": "0.3.0"
     },
     ".agents/skills/context-work/SKILL.md": {
-      "hash": "866ba1bfd938bac16b1e72bcf5137dbdefde98d12838683a004eee238a044e07",
-      "version": "0.2.0"
+      "hash": "a76d0150be9774dd0881f683d6fd57dd9aab0749ed994577964f6726b4f11f17",
+      "version": "0.3.0"
     }
   },
   "managedBlocks": {
     "AGENTS.md": {
-      "hash": "4db7377d544addd370c05f6ea0a57e2276912612c53e7ca85e15ebc32a91b8e3",
-      "version": "0.2.0"
+      "hash": "1e417a5554f52b3832bf268e4d2e390f95f47241a73d439a24e246ffe71546b1",
+      "version": "0.3.0"
     }
   },
   "activeWork": null,
   "lastCompletedWork": {
-    "id": "work-20260906T020857984z-4577685d76",
-    "title": "Prepare the first npm release",
-    "completedAt": "2026-09-06T02:22:15.485Z"
+    "id": "work-20260907T223240748z-a8f88cf09b",
+    "title": "First-class requirements and portable agent governance",
+    "completedAt": "2026-09-07T23:09:33.762Z"
   }
 }

@@ -28,7 +28,7 @@ describe("semantic Skill contracts", () => {
     expect(skill).toContain("below 8 KiB");
     expect(skill).toContain("Never store raw prompts");
     expect(guide).toContain("works without hooks");
-    expect(guide.replace(/\s+/g, " ")).toContain("actual repository/tests");
+    expect(guide.replace(/\s+/g, " ").toLowerCase()).toContain("actual repository/tests");
   });
 
   it("onboarding coordinates focused Skills and requires a reviewable migration", () => {

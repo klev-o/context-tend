@@ -18,6 +18,7 @@ before creating anything.
 - deterministic repository scanning and Knowledge Registry generation;
 - safe dry-run/apply lifecycle with race-conflict protection;
 - native, generic, GitHub Spec Kit, OpenSpec, Agent OS, and GSD adapters;
+- first-class human-owned SPEC/requirements, including modular topic navigation;
 - schema, path, ownership, authority, link, asset, and adapter validation;
 - source hash diff and explicit sync/audit state;
 - six functional repo-scoped Codex Skills for onboarding, bootstrap, active
@@ -100,6 +101,124 @@ onboarding cannot be recorded while configuration names, paths, flags, or code
 symbols from that baseline are absent from active documentation or a
 self-contained candidate. A Git-history pointer alone is not preservation.
 A successful run records onboarding and resumes the original task.
+
+## Requirements: from one SPEC to a topic tree
+
+A new native project gets human-owned `SPEC.md` when no requirements source
+already exists. Write concrete requirements, constraints, and acceptance
+expectations there; leave unknowns explicit.
+
+| Document | Purpose |
+| --- | --- |
+| GOALS | Why the project exists and desired outcomes |
+| PRODUCT | Users, product behavior, and intent |
+| SPEC | Concrete requirements, constraints, acceptance expectations |
+| ARCHITECTURE | How the system is structured |
+| PLANS | What is being implemented and in what order |
+
+A small native project can use:
+
+```text
+AGENTS.md                 # compact instruction/routing map
+SPEC.md                   # human-owned requirements inline
+ARCHITECTURE.md            # existing architecture, if present
+docs/
+  GOALS.md
+  PRODUCT.md
+  PLANS.md
+  decisions/
+  context/
+.contexttend/             # registry, lifecycle state, managed guides
+.agents/skills/           # installed semantic workflows
+```
+
+When topics need independent reading, keep the root stable:
+
+```text
+SPEC.md                   # purpose, global constraints, authoritative-detail notice, index
+docs/spec/
+  identity.md             # example topic; choose names for your project
+  interfaces.md
+  delivery.md
+```
+
+The registry keeps one logical canonical source:
+
+```yaml
+requirements:
+  path:
+    - SPEC.md
+    - docs/spec/
+  role: requirements
+  authority: canonical
+  owner: human
+  adapter: native
+```
+
+The agent reads SPEC's global constraints and follows only relevant links.
+The root does not duplicate child requirements. Every active topic must be
+reachable from the root, directly or through a linked topic index.
+
+A split is a semantic `context-bootstrap` workflow, also routed from
+`context-sync`. It preserves requirement text, IDs, qualifications and
+provenance, verifies all destinations before shortening the original, rechecks
+source/registry hashes, and keeps the source ID and ownership unchanged.
+Changed relative links must resolve to the same targets. A size finding never
+authorizes automatic splitting or reinterpretation from code. See the
+[requirements lifecycle and lossless migration protocol](.contexttend/guides/requirements.md).
+
+### Adoption and upgrades
+
+- Existing `SPEC.md` is adopted; with `docs/spec/` both paths belong to one
+  source. Other recognized documents are `SPECIFICATION.md`, `REQUIREMENTS.md`,
+  and `docs/REQUIREMENTS.md`. Recognized directories are `requirements/`,
+  `docs/requirements/`, `specs/`, and `docs/spec/`.
+- During fresh discovery, independent requirement conventions produce a
+  reviewable canonical-role conflict. On re-init, explicit existing registry
+  mappings retain precedence; review new sources before changing that mapping.
+- Spec Kit, OpenSpec, Agent OS and GSD retain external ownership. Conventional
+  documents for their canonical roles remain supporting. An early external
+  installation without requirements yet suppresses native SPEC creation.
+- `createMissingNativeSources: false` in `.contexttend/config.yaml` disables
+  missing native document creation while preserving adoption.
+- `update --apply` refreshes managed assets only. Older installations without
+  SPEC remain valid; neither their registry nor human documents are rewritten.
+  To add/adopt requirements explicitly, review `contexttend init . --dry-run`
+  before `contexttend init . --apply`, then use bootstrap for semantic content.
+  State schema v2 and registry v1 remain unchanged.
+
+### Who edits what
+
+Maintainers normally edit human-owned goals, product intent and requirements,
+or supply confirmed changes to the agent. Agents maintain shared architecture,
+plans and decisions from confirmed changes, and agent-owned implementation
+summaries from evidence. Implementation alone never changes human requirements.
+
+ContextTend maintains generated metadata, installed Skills/guides and its
+managed AGENTS block through preview/apply. Let the CLI maintain `state.json`,
+managed hashes, and recovery data; do not edit them by hand. Registry/config
+changes are deliberate configuration work, not automatic promotion from code.
+External artifacts are maintained through their owning framework.
+
+Validation checks canonical conflicts, containment/existence, SPEC/tree
+mapping, supported local file links and orphan topic reachability. A requirements
+document or selected repository instruction chain over 16 KiB produces only an
+advisory reading-budget warning. This is not a Codex limit; effective global
+instructions, fallback filenames and host settings require a harness audit.
+Inline/reference links are supported outside code examples; heading anchors
+and arbitrary Markdown extensions still need review.
+
+`context-sync` distinguishes changed/new confirmed requirements, implementation
+changes and drift. `memory-audit` reviews stale or duplicated requirements,
+unimplemented obligations, unsupported promotion from code, and navigation gaps.
+No deterministic check claims that human meaning is correct.
+
+The same files work with older Codex generations and other repository-capable
+agents: if Skill invocation is unavailable, read its `SKILL.md` directly.
+No specific model, hook, subagent, hidden state or large context window is
+required. [Governance](.contexttend/guides/agent-governance.md) separates user
+intent, scoped instructions, canonical requirements and implementation facts;
+`harness-audit` reports exact rules behind conflicts or unexpected pauses.
 
 ## Interruption-safe active work
 
@@ -224,7 +343,7 @@ After initialization, current Codex discovers these under `.agents/skills/`:
   sources, verifies source coverage, records completion, and resumes the
   original request.
 - `$context-bootstrap` fills missing or placeholder native knowledge while
-  preserving unknown product intent.
+  preserving unknown product intent, and performs authorized lossless SPEC splits.
 - `$context-work` starts, checkpoints, resumes, blocks, or completes one
   substantive work item. It reconciles semantic progress with actual
   Git/filesystem and test evidence instead of trusting stale memory.
@@ -234,7 +353,8 @@ After initialization, current Codex discovers these under `.agents/skills/`:
   contradictory, duplicate, orphaned, unsupported, superseded, missing,
   misowned, and overloaded knowledge.
 - `$harness-audit` performs fresh official OpenAI/Codex research and proposes
-  reviewed harness changes without migrating the project.
+  reviewed harness changes. A request that also authorizes fixes continues after
+  the audit report without a second permission request.
 
 The short managed block in `AGENTS.md` points agents to the registry. It is not
 a knowledge dump. Codex Skills support both explicit and description-based

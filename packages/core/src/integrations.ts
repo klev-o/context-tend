@@ -12,7 +12,6 @@ import { serializeJson, writeProjectFile } from "./storage.js";
 
 export const CODEX_HOOKS_PATH = ".codex/hooks.json";
 export const CLAUDE_BRIDGE_PATH = "CLAUDE.md";
-const HOOK_SCRIPT_FRAGMENT = ".contexttend/hooks/codex.mjs";
 
 export interface IntegrationPlan {
   root: string;
@@ -82,8 +81,24 @@ export function desiredCodexHooks(): Record<string, unknown[]> {
   };
 }
 
-function isContextTendHookGroup(value: unknown): boolean {
-  return JSON.stringify(value).includes(HOOK_SCRIPT_FRAGMENT);
+function isContextTendHandler(value: unknown): boolean {
+  if (!isRecord(value) || value["type"] !== "command") return false;
+  return ["session-start", "recover", "stop"].some((mode) => {
+    const expected = hookCommand(mode);
+    // A path mentioned in arbitrary metadata is not proof of ownership.
+    // Preserve customized commands, including a different platform variant.
+    return (value["command"] === expected.command || value["commandWindows"] === expected.commandWindows) &&
+      (value["command"] === undefined || value["command"] === expected.command) &&
+      (value["commandWindows"] === undefined || value["commandWindows"] === expected.commandWindows);
+  });
+}
+
+function preserveOtherHandlers(group: unknown): unknown[] {
+  if (!isRecord(group) || !Array.isArray(group["hooks"])) return [group];
+  const original = group["hooks"];
+  const remaining = original.filter((hook) => !isContextTendHandler(hook));
+  if (remaining.length === original.length) return [group];
+  return remaining.length === 0 ? [] : [{ ...group, hooks: remaining }];
 }
 
 function mergeCodexHooks(current: string | null): string {
@@ -115,7 +130,7 @@ function mergeCodexHooks(current: string | null): string {
       throw new Error(`${CODEX_HOOKS_PATH} hooks.${event} must be an array`);
     }
     hooks[event] = [
-      ...(existing ?? []).filter((group) => !isContextTendHookGroup(group)),
+      ...(existing ?? []).flatMap(preserveOtherHandlers),
       ...desiredGroups,
     ];
   }

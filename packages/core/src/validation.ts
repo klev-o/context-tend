@@ -1,5 +1,4 @@
 import { lstat, readFile } from "node:fs/promises";
-import path from "node:path";
 
 import { adapters } from "./adapters/index.js";
 import {
@@ -26,6 +25,7 @@ import {
   resolveRegistryPath,
   toRegistryPath,
 } from "./paths.js";
+import { validateCanonicalRoles } from "./registry-validation.js";
 import { scanProject } from "./scanner.js";
 import {
   ContextTendFileError,
@@ -34,6 +34,9 @@ import {
   loadRegistry,
   loadState,
 } from "./storage.js";
+import { localMarkdownTargets, markdownTargetPath, readContainedText } from "./markdown.js";
+import { validateRequirements } from "./requirements-validation.js";
+import { validateInstructionContext } from "./instruction-validation.js";
 import { getWorkStatus } from "./work.js";
 
 function fileFinding(error: unknown, code: string, relativePath: string): Finding {
@@ -61,25 +64,6 @@ async function exists(target: string): Promise<boolean> {
   }
 }
 
-function validateCanonicalRoles(registry: Registry): Finding[] {
-  const byRole = new Map<string, string[]>();
-  for (const [id, source] of Object.entries(registry.sources)) {
-    if (source.authority !== "canonical") continue;
-    const ids = byRole.get(source.role) ?? [];
-    ids.push(id);
-    byRole.set(source.role, ids);
-  }
-  return [...byRole.entries()]
-    .filter(([, ids]) => ids.length > 1)
-    .map(([role, ids]) => ({
-      code: "CT103",
-      level: "error" as const,
-      severity: "P1" as const,
-      message: `Multiple canonical sources are registered for role "${role}"`,
-      evidence: ids,
-      remediation: "Choose one canonical source and mark the others supporting or historical.",
-    }));
-}
 
 async function validateSourcePaths(root: string, registry: Registry): Promise<Finding[]> {
   const findings: Finding[] = [];
@@ -146,26 +130,6 @@ function registeredMarkdownFiles(
   return [...files].sort();
 }
 
-function localMarkdownTargets(content: string): string[] {
-  const targets: string[] = [];
-  const expression = /!?\[[^\]]*\]\(([^)]+)\)/g;
-  for (const match of content.matchAll(expression)) {
-    const raw = match[1]?.trim() ?? "";
-    const enclosed = raw.match(/^<([^>]+)>/u)?.[1];
-    const target = enclosed ?? raw.split(/\s+["']/u)[0] ?? "";
-    if (
-      target.length === 0 ||
-      target.startsWith("#") ||
-      target.startsWith("/") ||
-      /^(?:https?:|mailto:|data:|javascript:)/iu.test(target)
-    ) {
-      continue;
-    }
-    const withoutFragment = target.split("#", 1)[0]?.split("?", 1)[0] ?? "";
-    if (withoutFragment.length > 0) targets.push(withoutFragment);
-  }
-  return targets;
-}
 
 async function validateMarkdownLinks(
   root: string,
@@ -174,30 +138,12 @@ async function validateMarkdownLinks(
 ): Promise<Finding[]> {
   const findings: Finding[] = [];
   for (const markdownPath of registeredMarkdownFiles(snapshot, registry)) {
-    const absolute = resolveRegistryPath(root, markdownPath);
-    if (!(await realPathIsInsideRoot(root, absolute))) {
-      findings.push({
-        code: "CT114",
-        level: "error",
-        severity: "P0",
-        message: "Registered Markdown resolves outside the project root",
-        path: markdownPath,
-        remediation: "Remove the external symlink or register an in-repository source.",
-      });
-      continue;
-    }
-    const content = await readFile(absolute, "utf8");
+    const content = await readContainedText(root, markdownPath);
+    if (content === null) continue; // Path findings describe missing/unsafe sources.
     for (const encodedTarget of localMarkdownTargets(content)) {
-      let target = encodedTarget;
       try {
-        target = decodeURIComponent(encodedTarget);
-      } catch {
-        // Preserve the malformed path so the finding remains actionable.
-      }
-      const resolved = path.resolve(path.dirname(absolute), target);
-      try {
-        const relative = toRegistryPath(path.relative(root, resolved));
-        resolveRegistryPath(root, relative);
+        const relative = markdownTargetPath(markdownPath, encodedTarget);
+        const resolved = resolveRegistryPath(root, relative);
         if (!(await exists(resolved))) {
           findings.push({
             code: "CT106",
@@ -461,15 +407,18 @@ export async function validateProject(projectRoot: string): Promise<ValidationRe
 
   if (registry !== null) {
     findings.push(...validateCanonicalRoles(registry));
+    findings.push(...await validateRequirements(snapshot, registry));
     findings.push(...(await validateSourcePaths(snapshot.root, registry)));
     findings.push(...(await validateGeneratedMarkers(snapshot.root, registry)));
     findings.push(...(await validateMarkdownLinks(snapshot.root, snapshot, registry)));
     for (const adapter of adapters) {
-      if (adapter.detect(snapshot).detected && adapter.validate) {
+      const registered = Object.values(registry.sources).some((source) => source.adapter === adapter.id);
+      if ((adapter.detect(snapshot).detected || registered) && adapter.validate) {
         findings.push(...adapter.validate(snapshot, registry));
       }
     }
   }
+  findings.push(...await validateInstructionContext(snapshot));
   findings.push(...(await validateManagedAssets(snapshot.root, state)));
   findings.push(...(await validateAgentCoverageBaseline(snapshot.root, state)));
   findings.push(...(await validateActiveWork(snapshot.root, state)));

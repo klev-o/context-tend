@@ -66,7 +66,14 @@ export function discoverWithAdapters(
       if (Object.values(sources).some((existing) => sameSource(existing, knowledgeSource))) {
         continue;
       }
-      sources[uniqueId(requestedId, adapter.id, sources)] = knowledgeSource;
+      const externalOwner = Object.values(sources).some((existing) =>
+        existing.role === knowledgeSource.role &&
+        existing.authority === "canonical" && existing.owner === "external");
+      const adopted = externalOwner && knowledgeSource.authority === "canonical" &&
+        (adapter.id === "native" || adapter.id === "generic")
+        ? { ...knowledgeSource, authority: "supporting" as const }
+        : knowledgeSource;
+      sources[uniqueId(requestedId, adapter.id, sources)] = adopted;
     }
   }
   return { statuses, registry: { version: 1, sources } };

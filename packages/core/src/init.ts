@@ -33,7 +33,8 @@ import {
   managedBlockHash,
   upsertManagedBlock,
 } from "./managed-block.js";
-import { resolveRegistryPath, toRegistryPath } from "./paths.js";
+import { assertSafeProjectWritePath, resolveRegistryPath, toRegistryPath } from "./paths.js";
+import { validateCanonicalRoles } from "./registry-validation.js";
 import { scanProject } from "./scanner.js";
 import {
   loadConfig,
@@ -179,6 +180,15 @@ async function planFile(
 
 function nativeSourceForPath(relativePath: string): KnowledgeSource {
   switch (relativePath) {
+    case "SPEC.md":
+      return {
+        path: relativePath,
+        role: "requirements",
+        authority: "canonical",
+        owner: "human",
+        adapter: "native",
+        description: "Requirements, constraints, and acceptance expectations; human intent only",
+      };
     case "docs/GOALS.md":
       return {
         path: relativePath,
@@ -230,6 +240,7 @@ function nativeSourceForPath(relativePath: string): KnowledgeSource {
 }
 
 function nativeIdForPath(relativePath: string): string {
+  if (relativePath === "SPEC.md") return "requirements";
   if (relativePath.includes("GOALS")) return "goals";
   if (relativePath.includes("PRODUCT")) return "product";
   if (relativePath.includes("PLANS")) return "roadmap";
@@ -277,8 +288,6 @@ export async function buildInitPlan(
 ): Promise<ChangePlan> {
   const project = await scanProject(projectRoot);
   const root = project.root;
-  const now = options.now ?? new Date();
-  const checkedDate = now.toISOString().slice(0, 10);
   const discovery = discoverWithAdapters(project);
   const existingRegistry = await loadExistingRegistry(root);
   const registry = existingRegistry === null
@@ -295,11 +304,26 @@ export async function buildInitPlan(
     ...(existingConfig ?? DEFAULT_CONFIG),
     mode: options.mode ?? existingConfig?.mode ?? "adaptive",
   };
-  const findings: Finding[] = [];
+  const findings: Finding[] = validateCanonicalRoles(registry);
   const changes: PlannedChange[] = [];
 
   for (const [relativePath, content] of Object.entries(NATIVE_SOURCE_TEMPLATES)) {
+    if (!config.createMissingNativeSources) continue;
     const mappedSource = nativeSourceForPath(relativePath);
+    if (mappedSource.role === "requirements" &&
+      !hasCanonicalRole(registry, "requirements") &&
+      (discovery.statuses.some((status) =>
+        status.detection.detected && !["native", "generic"].includes(status.id)) ||
+        Object.values(registry.sources).some((source) =>
+          source.role === "requirements" && source.owner === "external" &&
+          source.authority !== "historical"))) {
+      findings.push({
+        code: "CT204", level: "warning", severity: "P2",
+        message: "External specification owner detected without canonical requirements",
+        remediation: "Use its workflow to establish requirements, then explicitly adopt them; no native SPEC was created.",
+      });
+      continue;
+    }
     if (!hasCanonicalRole(registry, mappedSource.role)) {
       addNativeSource(registry, nativeIdForPath(relativePath), mappedSource);
       const existing = await readFileIfPresent(root, relativePath);
@@ -457,7 +481,7 @@ export async function buildInitPlan(
 
   const externalRegistry = mergeExternalRegistry(
     await loadExistingExternalRegistry(root),
-    defaultExternalSourceRegistry(checkedDate),
+    defaultExternalSourceRegistry(),
   );
   changes.push(
     await planFile(
@@ -545,6 +569,12 @@ export async function applyInitPlan(
   );
   if (stateChange !== undefined) {
     await assertNoWriteConflict(plan.root, stateChange);
+  }
+
+  for (const change of plan.changes) {
+    if (change.kind === "skip") continue;
+    await assertNoWriteConflict(plan.root, change);
+    await assertSafeProjectWritePath(plan.root, change.path);
   }
 
   for (const change of plan.changes) {

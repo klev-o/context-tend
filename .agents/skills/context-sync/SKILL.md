@@ -16,8 +16,13 @@ Determine whether repository changes require durable knowledge updates.
 4. Answer each impact question with yes/no/unknown and evidence:
    product behavior, architecture, business rule, public interface, security
    assumption, reliability behavior, durable decision, accepted limitation,
-   and completed plan.
+   and completed plan. For requirements distinguish changed/new human intent,
+   implementation-only changes, code/spec drift, and a need to modularize.
+   Read the requirements entry point and relevant topics, not the whole tree.
 5. Route only to registered roles affected by a yes/unknown answer.
+   For SPEC lifecycle or splitting, use [the requirements guide](../../../.contexttend/guides/requirements.md)
+   and context-bootstrap within existing task authorization. Do not treat
+   implemented behavior as a new requirement without human evidence.
 6. Apply ownership policy. Human-owned meaning needs direct user evidence;
    shared knowledge needs a confirmed project change; agent-owned summaries
    may be maintained from strong evidence; external/generated sources are not

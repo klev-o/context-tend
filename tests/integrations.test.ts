@@ -9,6 +9,7 @@ import {
   buildCodexHooksPlan,
   buildInitPlan,
   countManagedBlocks,
+  desiredCodexHooks,
   startWork,
 } from "@contexttend/core";
 import { afterEach, describe, expect, it } from "vitest";
@@ -83,6 +84,29 @@ describe("agent continuity integrations", () => {
         "SessionEnd",
       ]),
     );
+    expect((await buildCodexHooksPlan(root)).change.kind).toBe("skip");
+  });
+
+  it("preserves custom handlers and metadata inside a mixed ContextTend group", async () => {
+    const root = await initialized();
+    await mkdir(path.join(root, ".git"));
+    await mkdir(path.join(root, ".codex"));
+    const custom = { type: "command", command: "node custom-stop.mjs" };
+    const noteOnly = {
+      description: "Observe .contexttend/hooks/codex.mjs",
+      hooks: [{ type: "command", command: "node audit.mjs" }],
+    };
+    const desired = desiredCodexHooks()["Stop"]![0] as { hooks: unknown[] };
+    const mixed = { matcher: "custom-scope", description: "Keep metadata", hooks: [...desired.hooks, custom] };
+    const target = path.join(root, ".codex", "hooks.json");
+    await writeFile(target, JSON.stringify({ hooks: { Stop: [mixed, noteOnly] } }), "utf8");
+    await applyIntegrationPlan(await buildCodexHooksPlan(root));
+    const installed = JSON.parse(await readFile(target, "utf8")) as { hooks: { Stop: unknown[] } };
+    expect(installed.hooks.Stop).toEqual([
+      { ...mixed, hooks: [custom] },
+      noteOnly,
+      ...desiredCodexHooks()["Stop"]!,
+    ]);
     expect((await buildCodexHooksPlan(root)).change.kind).toBe("skip");
   });
 

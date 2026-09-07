@@ -93,3 +93,10 @@ sources:
     owner: human
     adapter: generic
     description: Project research and source analysis
+  requirements:
+    path: SPEC.md
+    role: requirements
+    authority: canonical
+    owner: human
+    adapter: native
+    description: Project requirements and specification

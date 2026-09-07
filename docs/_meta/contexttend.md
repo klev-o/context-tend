@@ -1,7 +1,7 @@
 <!-- contexttend:generated -->
 # ContextTend installation
 
-Managed by ContextTend 0.2.0.
+Managed by ContextTend 0.3.0.
 
 Use `.contexttend/registry.yaml` for the knowledge map and
 `.contexttend/state.json` for machine state. Active handoff state, when used,

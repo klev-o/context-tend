@@ -1,6 +1,6 @@
 {
   "name": "contexttend-workspace",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Living project knowledge governance for coding agents",
   "type": "module",

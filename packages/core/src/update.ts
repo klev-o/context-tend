@@ -19,7 +19,7 @@ import {
   managedBlockHash,
   upsertManagedBlock,
 } from "./managed-block.js";
-import { resolveRegistryPath } from "./paths.js";
+import { assertSafeProjectWritePath, resolveRegistryPath } from "./paths.js";
 import { scanProject } from "./scanner.js";
 import {
   loadRegistry,
@@ -185,6 +185,12 @@ export async function applyUpdatePlan(
     (change) => change.path === ".contexttend/state.json",
   );
   if (stateChange) await assertNoConflict(plan.root, stateChange);
+
+  for (const change of plan.changes) {
+    if (change.kind === "skip") continue;
+    await assertNoConflict(plan.root, change);
+    await assertSafeProjectWritePath(plan.root, change.path);
+  }
 
   for (const change of plan.changes) {
     if (

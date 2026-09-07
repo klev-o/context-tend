@@ -14,7 +14,7 @@ knowledge discoverable only through Git history.
 ## Related Skills
 
 Read a related Skill's `SKILL.md` completely before using that phase. Its
-current contract wins; do not duplicate or weaken it here.
+contract applies within the governance guide's instruction precedence.
 
 - `$harness-audit full`: verify non-managed AGENTS content and existing Codex
   Skills, plugins, configuration, or discovery assumptions. It reports only.
@@ -31,14 +31,16 @@ current contract wins; do not duplicate or weaken it here.
    `.contexttend/state.json`, `.contexttend/registry.yaml`, and the governance
    guide completely. If `lastOnboarding` is already set and onboarding was not
    explicitly requested, resume the original task without rerunning this flow.
-2. Run `contexttend validate`. Stop semantic writes when deterministic
+2. Run `contexttend validate`. Repair authorized mechanical faults first; pause
+   only affected semantic writes when deterministic
    infrastructure is invalid and report the exact remediation. Confirm
    `.contexttend/agents-coverage.json` represents the original source. For a
    legacy or repair run, capture a trusted pre-migration file or Git ref first.
 3. When user-authored AGENTS content exists, read
    [references/agents-migration.md](references/agents-migration.md) completely
    and follow its lossless protocol. Read `AGENTS.md` completely, in chunks if
-   needed; never infer coverage from a summary or file-size comparison. In a
+   needed; inspect applicable nested AGENTS.md and AGENTS.override.md without
+   widening their scope. Never infer coverage from a summary or file-size comparison. In a
    repair run, read the exact original path/ref named by the coverage baseline,
    not only the already-condensed working-tree AGENTS file.
 4. Inventory conventional documentation, registered sources, external

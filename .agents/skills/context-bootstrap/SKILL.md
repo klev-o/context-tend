@@ -8,11 +8,17 @@ description: Bootstrap or repair missing or placeholder typed project knowledge 
 Create useful durable knowledge from repository evidence without inventing
 product intent.
 
+For requirements creation, repair, or a requested structural split, read
+[the requirements lifecycle](../../../.contexttend/guides/requirements.md).
+Preserve the existing source ID and human meaning; size findings only trigger
+review. This Skill performs the semantic migration, not the update command.
+
 ## Workflow
 
 1. Locate the repository root and read `.contexttend/registry.yaml` completely.
 2. Read `.contexttend/guides/agent-governance.md` completely.
-3. Run `contexttend validate`. Stop semantic writes if deterministic
+3. Run `contexttend validate`. Repair authorized mechanical faults first; pause
+   only affected semantic writes if deterministic
    infrastructure is invalid; report the exact findings.
 4. Build a role coverage table from the registry. Treat external adapter
    sources as read-only and use them instead of parallel ContextTend docs.

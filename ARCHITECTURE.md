@@ -79,6 +79,42 @@ boundary. Absolute paths and traversal outside the selected root are rejected.
 Existing real paths are also checked so symlinks cannot make registered reads
 or managed writes escape the repository.
 
+## Requirements lifecycle and compatibility
+
+The built-in `requirements` role already existed; registry v1 permits multiple
+paths, so neither registry nor state schema changes for this feature. Version
+0.3.0 updates managed assets through existing hash-based preview/apply.
+
+Fresh native creation supplies root `SPEC.md` with human ownership and explicit
+unknowns. Generic discovery recognizes only exact root document and directory
+conventions, including SPECIFICATION/REQUIREMENTS and docs/requirements.
+Root SPEC plus docs/spec are grouped before adapter merging. Independent
+conventions remain conflicting candidates, not silently merged human meaning.
+A higher-priority external canonical owner retains authority; conventional
+sources for the same role become supporting. Competing external canonical
+owners remain an error. Early external markers prevent parallel native
+requirements even before their specs exist.
+
+`createMissingNativeSources` gates native scaffolds. Existing requirements
+are adopted first. Ordinary update never adds SPEC or changes the knowledge
+registry. Legacy installations without requirements remain valid; explicit
+init/bootstrap is the opt-in addition/adoption path.
+
+For compact projects, SPEC contains concrete obligations, constraints and
+acceptance expectations. For larger ones, SPEC holds purpose, global constraints,
+an authoritative-detail notice and topic links; `docs/spec/` contains detail.
+Both are paths of the same source with the same stable ID, owner and authority.
+No fixed topics, second canonical source, database or retrieval runtime is needed.
+
+GOALS explains why; PRODUCT describes users and product intent; SPEC records
+concrete obligations; ARCHITECTURE describes structure; PLANS orders execution.
+The requirements guide is the sole detailed lifecycle/split protocol.
+Bootstrap owns semantic splitting, sync detects impact and routes needed
+migration, memory audit reviews meaning/drift, and core checks structure.
+A lossless move preserves source spans and links, writes/compares destinations
+before shortening the root, rechecks source/registry hashes, and retains all
+human intent. A semantic rewrite is never justified by code evidence or size.
+
 ## Ownership model
 
 | Owner | Agent write policy |
@@ -108,7 +144,9 @@ trees. Adapters are deterministic and ordered:
 Higher-priority external systems keep ownership of the roles they already
 provide. Discovery merges identical role/path mappings and gives colliding IDs
 stable adapter prefixes. Validation exposes unresolved canonical conflicts
-instead of silently choosing one.
+instead of silently choosing one. Init also rejects canonical conflicts before
+writing infrastructure; validation checks registered adapter contracts even
+when their discovery markers have disappeared.
 
 Spec Kit is the end-to-end reference adapter: `.specify/` and `specs/` are
 detected, `specs/` becomes canonical external requirements, its constitution
@@ -122,8 +160,11 @@ the target, create/update/skip decision, reason, and owner. No preview writes
 files.
 
 For every planned update, the full current content hash is recorded. Apply
-rechecks that hash immediately before writing and refuses the operation if the
-target changed after preview. Writes are additive or bounded:
+preflights all write targets and containment before the first write, then
+rechecks each target immediately before writing. It refuses changed targets.
+This prevents known late-plan conflicts from causing earlier writes, but is
+not a transaction or cross-process filesystem lock; races during writes and
+I/O failure can still leave a partial apply. Writes are additive or bounded:
 
 - existing project knowledge is adopted and preserved;
 - missing native sources contain explicit unknowns, not invented claims;
@@ -135,7 +176,9 @@ target changed after preview. Writes are additive or bounded:
 
 Optional Codex hooks and the Claude bridge use the same preview/apply and
 before-hash conflict pattern. Existing handlers and user-authored rules are
-preserved around ContextTend-owned entries or markers.
+preserved around ContextTend-owned entries or markers. Hook merging recognizes
+exact generated handlers and retains user handlers and metadata even inside
+mixed groups; a path mentioned in unrelated text is not ownership evidence.
 
 `$context-onboard` may later migrate semantic knowledge only after an
 evidence-backed `ONBOARDING PLAN`. It must write and validate destinations
@@ -203,8 +246,9 @@ changed paths. Non-Git repositories use the existing ignored-tree hashing
 rules. `.contexttend/` is excluded so recovery updates do not make themselves
 stale. `recovery.json` records paths and hashes, never content.
 
-On resume, the semantic Skill uses the current user message first, then actual
-repository/tests, canonical knowledge, `current.md`, and recovery evidence.
+On resume, the semantic Skill uses the current user message for intent and
+canonical requirements for obligations. Actual repository/tests establish
+implementation facts; `current.md` and recovery evidence describe progress.
 This prevents a stale checkpoint from overriding observed facts. External
 Spec Kit/OpenSpec/Agent OS/GSD task artifacts retain ownership; the handoff
 stores only pointers and the resume delta.
@@ -236,6 +280,29 @@ duplicate canonical roles, registered Markdown links, native generated
 markers, system assets, exactly one managed AGENTS block, and adapter
 consistency. Warnings surface preserved local customization without making a
 healthy repository unusable.
+
+Requirements validation checks SPEC/tree mapping, file links and graph reachability
+from the root, including topic indexes and cycles. Inline/reference Markdown
+links outside fenced/inline code are supported; directory navigation follows a
+README index. Heading anchors and arbitrary Markdown extensions are outside
+this bounded parser. External specification structures retain their own contract.
+
+Requirements documents and selected ancestor instruction chains above a 16 KiB
+advisory reading budget produce warnings, never automatic rewrites. Instruction
+checks expose same-directory AGENTS.override shadowing and exact ancestor
+duplication, without counting sibling scopes as one prompt. They do not emulate
+global/fallback/configured host loading or classify semantic contradictions.
+
+Managed AGENTS is a compact map with an explicit plain-Markdown Skill fallback.
+The governance guide separates host instruction precedence, scoped repository
+rules, user authorization, semantic knowledge authority and checkpoint evidence.
+Harness audit maps exact rule sources, scopes and behavioral effects; it does
+not add implicit approval gates. The protocol requires no specific model,
+subagent runtime, proprietary API, hidden model state or large context window.
+
+Offline init seeds external references with their bundled research date, not
+the installation date. Only an actual source review and record operation
+advances its freshness; ordinary update preserves existing source metadata.
 
 Semantic freshness is intentionally not claimed by deterministic validation.
 That is the job of `$memory-audit`, with evidence and confidence in every

@@ -19,7 +19,11 @@ Audit whether durable knowledge still matches the project.
    `UNSUPPORTED`, `SUPERSEDED`, `MISSING`, `MISOWNED`, and `OVERLOADED`.
 5. Explicitly test for stale architecture, contradictory product rules,
    duplicate canonical sources, completed active plans, and missing registered
-   files. Absence of evidence is not automatically a contradiction.
+   files. For requirements inspect stale/contradictory/duplicated obligations,
+   orphan spec documents, broken index links, requirements no longer implemented,
+   and implemented behavior presented as requirements without human evidence.
+   Compare only relevant topic detail. Absence of evidence is not automatically
+   a contradiction; code does not decide that a requirement is obsolete.
 6. Assign P0 dangerous contradiction, P1 material stale knowledge, P2
    structural problem, or P3 optional cleanup.
 7. Every finding must include: Finding, Claim, Canonical source, Conflicting

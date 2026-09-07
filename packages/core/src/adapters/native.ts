@@ -1,6 +1,7 @@
 import type { KnowledgeAdapter, KnowledgeSource } from "../domain.js";
 import { snapshotHasPath } from "../scanner.js";
 import { source } from "./helpers.js";
+import { conventionalRequirements } from "./requirements.js";
 
 export const nativeAdapter: KnowledgeAdapter = {
   id: "native",
@@ -27,6 +28,11 @@ export const nativeAdapter: KnowledgeAdapter = {
       if (snapshotHasPath(project, candidate)) {
         sources[id] = source(candidate.endsWith(".md") ? candidate : `${candidate}/`, role, "canonical", owner, "native", description);
       }
+    }
+    const spec = conventionalRequirements(project).find((paths) => paths[0] === "SPEC.md");
+    if (spec) {
+      sources["requirements"] = source(spec.length === 1 ? spec[0]! : spec,
+        "requirements", "canonical", "human", "native", "Project requirements and specification");
     }
     return { sources };
   },

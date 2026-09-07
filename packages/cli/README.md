@@ -45,6 +45,15 @@ integration operations require an explicit `--apply`.
 Full documentation, architecture, Skills, adapters, and release notes are in
 the [ContextTend repository](https://github.com/klev-o/context-tend).
 
+## Project requirements
+
+New native projects get human-owned `SPEC.md` when no requirements owner exists.
+Existing specs/frameworks are adopted. A growing SPEC may become a stable index
+into `docs/spec/` under the same registry source; semantic bootstrap preserves
+all confirmed requirements. Ordinary `update` does not create SPEC in older
+installations or rewrite project knowledge. See the repository documentation
+and the installed `.contexttend/guides/requirements.md`.
+
 ## License
 
 MIT

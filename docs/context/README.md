@@ -9,6 +9,9 @@ or restate human product intent.
 - `packages/core`: strict TypeScript domain, Zod schemas, scanner, adapters,
   plan/apply lifecycle, validation, hashing, diff, update, migrations, record,
   active-work/recovery, and agent-integration APIs.
+- `packages/core/src/requirements-validation.ts` and `instruction-validation.ts`:
+  deterministic SPEC navigation, advisory reading budgets, scoped instruction
+  diagnostics; regression behavior is exercised by requirements/instruction tests.
 - `packages/cli`: Commander presentation over core with a dependency-free
   ASCII wordmark for human output and undecorated JSON/quiet/version channels.
   It is the only public npm package; its build bundles the private core and

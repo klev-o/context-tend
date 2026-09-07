@@ -30,4 +30,10 @@ No active durable implementation phase remains.
   release metadata/docs, publish dry-run, tarball regression, and clean-project
   installation smoke test.
 
+- Phase 15: first-class native/modular SPEC, conservative external adoption,
+  deterministic navigation/instruction diagnostics, explicit portable governance,
+  source-freshness repair, conflict preflight and mixed-hook preservation.
+  Regression suite, typecheck and build verified; see the
+  [architecture/harness review](../.contexttend/audits/2026-09-08-harness.md).
+
 Move completed work out of Active only after verification evidence exists.
